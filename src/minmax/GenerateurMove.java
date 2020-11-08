@@ -1,8 +1,8 @@
-package src.MinMax;
+package src.minmax;
 
 import java.util.List;
 
-public abstract class GenerateurMouvements {
+public abstract class GenerateurMove {
     int startRow, startCol;
 
     int endRow, endCol;
@@ -12,7 +12,7 @@ public abstract class GenerateurMouvements {
 
     protected int[][] board;
 
-    public GenerateurMouvements(int[][] board) {
+    protected GenerateurMove(int[][] board) {
 
         this.board = board;
     }
@@ -30,4 +30,10 @@ public abstract class GenerateurMouvements {
     protected boolean estVide(int emplacement) {
         return emplacement == 0;
     }
+
+    abstract boolean estDeplacableGauche(int xdepart, int ydepart);
+
+    abstract boolean estDeplacableDroite(int xdepart, int ydepart);
+
+    abstract boolean estDeplacableDevant(int xdepart, int ydepart);
 }

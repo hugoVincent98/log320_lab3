@@ -1,8 +1,8 @@
-package src.MinMax;
+package src.minmax;
 
 import java.util.*;
 
-public class MinMax {
+public class MinMaxTree {
 
   private class Node {
     int node;
@@ -52,7 +52,7 @@ public class MinMax {
   }
 
   private void construire(Node parent){
-    List<Integer> listePossible = 
+    //List<Integer> listePossible = 
   }
 
   // Ici, la méthode findBestChild trouve le nœud avec le score maximum si un

@@ -2,7 +2,8 @@ package src;
 
 import java.io.*;
 import java.net.*;
-import src.MinMax.*;
+
+import src.minmax.*;
 
 class Client {
 
@@ -15,7 +16,7 @@ class Client {
 		BufferedInputStream input;
 		BufferedOutputStream output;
 		int[][] board = new int[8][8];
-		GenerateurMouvements generateurMouvement;
+		GenerateurMove generateurMouvement;
 
 		try (Socket myClient = new Socket("localhost", 8888)) {
 

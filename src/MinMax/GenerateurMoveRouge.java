@@ -1,9 +1,9 @@
-package src.MinMax;
+package src.minmax;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenerateurMoveRouge extends GenerateurMouvements {
+public class GenerateurMoveRouge extends GenerateurMove {
 
   public GenerateurMoveRouge(int[][] board) {
     super(board);
@@ -13,7 +13,7 @@ public class GenerateurMoveRouge extends GenerateurMouvements {
   @Override
   public List<Move> obtenirListeMoves() {
     // TODO Auto-generated method stub
-    ArrayList<Move> listeMoves = new ArrayList();
+    ArrayList<Move> listeMoves = new ArrayList<>();
 
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
@@ -39,7 +39,7 @@ public class GenerateurMoveRouge extends GenerateurMouvements {
         }
       }
     }
-    return null;
+    return listeMoves;
   }
 
   boolean estDeplacableGauche(int xdepart, int ydepart) {
@@ -48,10 +48,7 @@ public class GenerateurMoveRouge extends GenerateurMouvements {
       return false;
 
     // si le pion a gauche est rouge
-    if (estRouge(board[xdepart - 1][ydepart + 1]))
-      return false;
-
-    return true;
+    return !estRouge(board[xdepart - 1][ydepart + 1]);
   }
 
   boolean estDeplacableDroite(int xdepart, int ydepart) {
@@ -60,10 +57,7 @@ public class GenerateurMoveRouge extends GenerateurMouvements {
       return false;
 
     // si le pion a droite est rouge
-    if (estRouge(board[xdepart + 1][ydepart + 1]))
-      return false;
-
-    return true;
+    return !estRouge(board[xdepart + 1][ydepart + 1]);
   }
 
   boolean estDeplacableDevant(int xdepart, int ydepart) {

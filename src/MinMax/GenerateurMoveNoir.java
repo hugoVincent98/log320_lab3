@@ -1,10 +1,9 @@
-package src.MinMax;
+package src.minmax;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.*;
 
-public class GenerateurMoveNoir extends GenerateurMouvements {
+public class GenerateurMoveNoir extends GenerateurMove {
 
   public GenerateurMoveNoir(int[][] board) {
     super(board);
@@ -14,7 +13,7 @@ public class GenerateurMoveNoir extends GenerateurMouvements {
   @Override
   public List<Move> obtenirListeMoves() {
     // TODO Auto-generated method stub
-    ArrayList<Move> listemoves = new ArrayList();
+    ArrayList<Move> listemoves = new ArrayList<>();
 
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
@@ -49,10 +48,7 @@ public class GenerateurMoveNoir extends GenerateurMouvements {
       return false;
 
     // si le pion a gauche est noir
-    if (estNoir(board[xdepart + 1][ydepart - 1]))
-      return false;
-
-    return true;
+    return !estNoir(board[xdepart + 1][ydepart - 1]);
   }
 
   boolean estDeplacableDroite(int xdepart, int ydepart) {
@@ -61,10 +57,7 @@ public class GenerateurMoveNoir extends GenerateurMouvements {
       return false;
 
     // si le pion a droite est rouge
-    if (estNoir(board[xdepart - 1][ydepart - 1]))
-      return false;
-
-    return true;
+    return !estNoir(board[xdepart - 1][ydepart - 1]);
   }
 
   boolean estDeplacableDevant(int xdepart, int ydepart) {
