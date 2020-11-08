@@ -2,27 +2,32 @@ package src;
 
 import java.io.*;
 import java.net.*;
+import src.MinMax.*;
 
 class Client {
+
+	static final int ROUGE = 2;
+	static final int NOIR = 4;
+
 	public static void main(String[] args) {
 
-		Socket MyClient;
+		// Socket MyClient;
 		BufferedInputStream input;
 		BufferedOutputStream output;
 		int[][] board = new int[8][8];
+		GenerateurMouvements generateurMouvement;
 
-		try {
-			MyClient = new Socket("localhost", 8888);
+		try (Socket myClient = new Socket("localhost", 8888)) {
 
-			input = new BufferedInputStream(MyClient.getInputStream());
-			output = new BufferedOutputStream(MyClient.getOutputStream());
+			input = new BufferedInputStream(myClient.getInputStream());
+			output = new BufferedOutputStream(myClient.getOutputStream());
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 			while (1 == 1) {
 				char cmd = 0;
 
 				cmd = (char) input.read();
 				System.out.println(cmd);
-				// Debut de la partie en joueur blanc
+				// Debut de la partie en joueur rouge
 				if (cmd == '1') {
 					byte[] aBuffer = new byte[1024];
 
@@ -43,6 +48,7 @@ class Client {
 						}
 					}
 
+					generateurMouvement = new GenerateurMoveRouge(board);
 					System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
 					String move = null;
 					move = console.readLine();
@@ -70,6 +76,7 @@ class Client {
 							y++;
 						}
 					}
+					generateurMouvement = new GenerateurMoveNoir(board);
 				}
 
 				// Le serveur demande le prochain coup
@@ -82,7 +89,31 @@ class Client {
 					input.read(aBuffer, 0, size);
 
 					String s = new String(aBuffer);
-					System.out.println("Dernier coup :" + s);
+					System.out.println("Dernier coup :" + s); // B2 - C3 [1][1]-[2][2]
+
+					char xOldChar = s.charAt(1);
+					int xOld = xOldChar - 65;// commence a 0
+
+					char yOldChar = s.charAt(2);
+					int yOld = yOldChar - 49;// commence a 0
+
+					char xNewChar = s.charAt(6);
+					int xNew = xNewChar - 65;
+
+					char yNewChar = s.charAt(7);
+					int yNew = yNewChar - 49;
+
+					int value = board[yOld][xOld];
+					board[xOld][yOld] = 0;
+					board[xNew][yNew] = value;
+
+					for (int i = 0; i < 8; i++) {
+						for (int j = 0; j < 8; j++) {
+							System.out.print(board[i][j] + " ");
+						}
+						System.out.println("");
+					}
+
 					System.out.println("Entrez votre coup : ");
 					String move = null;
 					move = console.readLine();
