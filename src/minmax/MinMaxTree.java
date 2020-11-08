@@ -55,9 +55,8 @@ public class MinMaxTree {
     //List<Integer> listePossible = 
   }
 
-  // Ici, la méthode findBestChild trouve le nœud avec le score maximum si un
-  // joueur est un maximiseur.
-  // Sinon, il renvoie l'enfant avec le score minimum:
+  // Ici, la méthode trouverMeilleurEnfant trouve le nœud avec le score maximum si
+  // un joueur est un maximiseur. Sinon, il renvoie l'enfant avec le score minimum
 
   public Node trouverMeilleurEnfant(boolean isMax, List<Node> enfant) {
     Comparator<Node> parScoreComparator = Comparator.comparing(Node::getScore);
