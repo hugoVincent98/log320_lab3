@@ -31,7 +31,7 @@ public class GenerateurMoveRouge extends GenerateurMove {
             listeMoves.add(enDroiteCentre);
           }
 
-          if (!estDeplacableDroite(i, j)) {
+          if (estDeplacableDroite(i, j)) {
             Move enDroiteBas = new Move(i, j, i + 1, j + 1);
             listeMoves.add(enDroiteBas);
           }
@@ -42,25 +42,28 @@ public class GenerateurMoveRouge extends GenerateurMove {
     return listeMoves;
   }
 
-  boolean estDeplacableGauche(int xdepart, int ydepart) {
+  boolean estDeplacableGauche(int i, int j) {
     // ne pas sortir du board a gauche
-    if (xdepart == 0)
+    if (j == 0 || i==7)
       return false;
 
     // si le pion a gauche est rouge
-    return !estRouge(board[xdepart - 1][ydepart + 1]);
+    return !estRouge(board[i + 1][j - 1]);
   }
 
-  boolean estDeplacableDroite(int xdepart, int ydepart) {
+  boolean estDeplacableDroite(int i, int j) {
     // ne pas sortir du board a droite
-    if (xdepart == 7)
+    if (j == 7 || i==7)
       return false;
 
     // si le pion a droite est rouge
-    return !estRouge(board[xdepart + 1][ydepart + 1]);
+    return !estRouge(board[i + 1][j + 1]);
   }
 
-  boolean estDeplacableDevant(int xdepart, int ydepart) {
-    return estVide(board[xdepart][ydepart + 1]);
+  boolean estDeplacableDevant(int i, int j) {
+    if (i==7)
+      return false;
+
+    return estVide(board[i+1][j]);
   }
 }

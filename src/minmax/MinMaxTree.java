@@ -26,13 +26,13 @@ public class MinMaxTree {
     boolean enfantMax = ! parent.getIsMax();
 
     for(int i = 0 ; i < listeMovePossible.size(); i++){
+      
       Node enfant = new Node(listeMovePossible.get(i), enfantMax);
       parent.addEnfant(enfant);
 
-      if(!listeMovePossible.get(i).estGagnant()){
+      /*if(!listeMovePossible.get(i).estGagnant()){
         construireArbre(enfant);
-      }
-
+      }*/
     }
   }
 
@@ -44,5 +44,4 @@ public class MinMaxTree {
     return enfant.stream().max(isMax ? parScoreComparator : parScoreComparator.reversed())
         .orElseThrow(NoSuchElementException::new);
   }
-
 }

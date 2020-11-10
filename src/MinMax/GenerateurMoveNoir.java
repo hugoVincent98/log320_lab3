@@ -42,25 +42,27 @@ public class GenerateurMoveNoir extends GenerateurMove {
     return listemoves;
   }
 
-  boolean estDeplacableGauche(int xdepart, int ydepart) {
+  boolean estDeplacableGauche(int i, int j) {
     // ne pas sortir du board a gauche
-    if (xdepart == 7)
+    if (i == 0 || j >=7)
       return false;
 
     // si le pion a gauche est noir
-    return !estNoir(board[xdepart + 1][ydepart - 1]);
+    return !estNoir(board[i - 1][j + 1]);
   }
 
-  boolean estDeplacableDroite(int xdepart, int ydepart) {
+  boolean estDeplacableDroite(int i, int j) {
     // ne pas sortir du board a droite
-    if (xdepart == 0)
+    if (i <= 0 || j <= 0)
       return false;
 
     // si le pion a droite est rouge
-    return !estNoir(board[xdepart - 1][ydepart - 1]);
+    return !estNoir(board[i - 1][j - 1]);
   }
 
-  boolean estDeplacableDevant(int xdepart, int ydepart) {
-    return estVide(board[xdepart][ydepart - 1]);
+  boolean estDeplacableDevant(int i, int j) {
+    if (j <= 0)
+      return false;
+    return estVide(board[i-1][j]);
   }
 }
