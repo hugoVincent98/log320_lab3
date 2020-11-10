@@ -1,58 +1,39 @@
-package src.minmax;
-
+package MinMax;
 import java.util.*;
+
 
 public class MinMaxTree {
 
-  private class Node {
-    int node;
-    boolean isMax;
-    int score;
-    List<Node> enfant;
-
-    public void setEnfant(List<Node> enfant) {
-      this.enfant = enfant;
-    }
-
-    public List<Node> getEnfant() {
-      return enfant;
-    }
-
-    public Node(int node, boolean isMax) {
-      this.node = node;
-      this.isMax = isMax;
-    }
-
-    public int getScore() {
-      return score;
-    }
-
-  }
-
-  private class Tree {
-    Node root;
-
-    public void setRoot(Node root) {
-      this.root = root;
-    }
-
-    public Node getRoot() {
-      return root;
-    }
-  }
-
+  int[][] board = new int[8][8];
+  GenerateurMove generateurMove;
   Tree tree;
-
-  public void construireArbre(int noeud) {
-    tree = new Tree();
-    Node root = new Node(noeud, true);
-    tree.setRoot(root);
-    construireArbre(root.node);
-
+  
+  public MinMaxTree(int [][] board, GenerateurMove generateurMove){
+    this.board = board;
+    this.generateurMove = generateurMove;
   }
 
-  private void construire(Node parent){
-    //List<Integer> listePossible = 
+  public void construireArbre(Move move) {
+    tree = new Tree();
+    Node root = new Node(move, true);
+    tree.setRoot(root);
+    construireArbre(root);
+  }
+
+  private void construireArbre(Node parent){
+    List<Move> listeMovePossible = generateurMove.obtenirListeMoves();
+
+    boolean enfantMax = ! parent.getIsMax();
+
+    for(int i = 0 ; i < listeMovePossible.size(); i++){
+      Node enfant = new Node(listeMovePossible.get(i), enfantMax);
+      parent.addEnfant(enfant);
+
+      if(!listeMovePossible.get(i).estGagnant()){
+        construireArbre(enfant);
+      }
+
+    }
   }
 
   // Ici, la méthode trouverMeilleurEnfant trouve le nœud avec le score maximum si
@@ -63,4 +44,5 @@ public class MinMaxTree {
     return enfant.stream().max(isMax ? parScoreComparator : parScoreComparator.reversed())
         .orElseThrow(NoSuchElementException::new);
   }
+
 }

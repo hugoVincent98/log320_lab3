@@ -1,4 +1,5 @@
-package src.minmax;
+package MinMax;
+
 
 import java.util.List;
 
@@ -36,4 +37,5 @@ public abstract class GenerateurMove {
     abstract boolean estDeplacableDroite(int xdepart, int ydepart);
 
     abstract boolean estDeplacableDevant(int xdepart, int ydepart);
+
 }

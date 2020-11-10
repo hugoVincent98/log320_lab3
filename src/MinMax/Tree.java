@@ -1,14 +1,13 @@
-package src.minmax;
+package MinMax;
+public class Tree {
+    Node root;
 
-public class Tree<T> {
-    private Node root;
-
-    public Tree() {
-        this.root = new Node<T>(null, null);
+    public void setRoot(Node root) {
+      this.root = root;
     }
 
-    public Node getRoot(){
-        return this.root;
+    public Node getRoot() {
+      return root;
     }
 
 

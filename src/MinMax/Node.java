@@ -1,30 +1,36 @@
-package src.minmax;
+package MinMax;
 
 import java.util.LinkedList;
+import java.util.List;
 
-public class Node<T> {
-    private T data;
-    private LinkedList<Node> childrens;
-    private Node parent;
+public class Node {
+    Move move;
+    boolean isMax;
+    int score;
+    List<Node> enfant;
 
-    public Node(){
+    public Node(Move move , boolean isMax) {
+      this.move = move;
+      this.isMax = isMax;
     }
 
-    public Node(T data, Node parent){
-        this.childrens = new LinkedList<>();
-        this.data = data;
-        this.parent = parent;
+    public void setEnfant(List<Node> enfant) {
+      this.enfant = enfant;
     }
 
-    public T getdata(){
-        return this.data;
+    public List<Node> getEnfant() {
+      return enfant;
     }
 
-    public LinkedList<Node> getChildrens(){
-        return this.childrens;
+    public boolean getIsMax(){
+      return this.isMax;
     }
 
-    public Node getParent(){
-        return this.parent;
+    public int getScore() {
+      return score;
+    }
+
+    public void addEnfant(Node enfant){
+      this.enfant.add(enfant);
     }
 }
