@@ -15,19 +15,23 @@ public class GenerateurMoveNoir extends GenerateurMove {
     // TODO Auto-generated method stub
     ArrayList<Move> listemoves = new ArrayList<>();
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 7; i >= 0; i--) {
       for (int j = 0; j < 8; j++) {
 
-        if (estRouge(board[i][j])) {
+        if (estNoir(board[i][j])) {
+          System.out.println("i: "+ i + "j: "+ j);
+          System.out.println("g: "+ estDeplacableGauche(i, j));
+          System.out.println("c: "+ estDeplacableDevant(i, j));
+          System.out.println("d: "+ estDeplacableDroite(i, j));
 
           // deplacement à gauche
           if (estDeplacableGauche(i, j)) {
-            Move enDroiteHaut = new Move(i, j, i + 1, j - 1);
+            Move enDroiteHaut = new Move(i, j, i - 1, j + 1);
             listemoves.add(enDroiteHaut);
           }
           // deplacement au centre
           if (estDeplacableDevant(i, j)) {
-            Move enDroiteCentre = new Move(i, j, i, j - 1);
+            Move enDroiteCentre = new Move(i, j, i - 1, j);
             listemoves.add(enDroiteCentre);
           }
 
@@ -44,7 +48,7 @@ public class GenerateurMoveNoir extends GenerateurMove {
 
   boolean estDeplacableGauche(int i, int j) {
     // ne pas sortir du board a gauche
-    if (i == 0 || j >=7)
+    if (j == 7 || i == 0)
       return false;
 
     // si le pion a gauche est noir
@@ -53,7 +57,7 @@ public class GenerateurMoveNoir extends GenerateurMove {
 
   boolean estDeplacableDroite(int i, int j) {
     // ne pas sortir du board a droite
-    if (i <= 0 || j <= 0)
+    if (i == 0 || j == 0)
       return false;
 
     // si le pion a droite est rouge
@@ -61,7 +65,7 @@ public class GenerateurMoveNoir extends GenerateurMove {
   }
 
   boolean estDeplacableDevant(int i, int j) {
-    if (j <= 0)
+    if (i == 0)
       return false;
     return estVide(board[i-1][j]);
   }
