@@ -1,4 +1,3 @@
-package MinMax;
 public class Tree {
     Node root;
 

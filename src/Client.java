@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import MinMax.*;
+import src.MinMax.*;
 class Client {
 
 	static final int ROUGE = 2;
@@ -130,9 +130,11 @@ class Client {
 					String move = null;
 					MinMax minmax = new MinMax(4, 4, 0, 0, board);
 					Move bestMove = minmax.getBestMove();
-					System.out.println("myMoveF: x:"+bestMove.getArrive().getX()+" y: "+bestMove.getArrive().getY());
 					System.out.println("myMoveD: x:"+bestMove.getDepart().getX()+" y: "+bestMove.getDepart().getY());
-					move = console.readLine();
+					System.out.println("myMoveF: x:"+bestMove.getArrive().getX()+" y: "+bestMove.getArrive().getY());
+					//move = console.readLine();
+					System.out.println(bestMove);
+					move = bestMove.toString();
 					output.write(move.getBytes(), 0, move.length());
 					output.flush();
 

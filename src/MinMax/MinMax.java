@@ -1,4 +1,5 @@
-package MinMax;
+
+import java.util.Arrays;
 import java.util.List;
 
 public class MinMax {
@@ -42,7 +43,7 @@ public class MinMax {
         int meilleurScore = MIN;
         List<Move> myMoves = gen.obtenirListeMoves();
         Move meilleurMove = null;
-        int[][] nboard = this.board;
+        int[][] nboard = Arrays.stream(this.board).map(int[]::clone).toArray(int[][]::new);
 
         for(int i = 0; i < myMoves.size(); i++){
             int value = nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()];
@@ -72,7 +73,7 @@ public class MinMax {
             int meilleurScore = MIN;
             List<Move> myMoves = gen.obtenirListeMoves();
             Move meilleurMove = null;
-            int[][] nboard = this.board;
+            int[][] nboard = Arrays.stream(board).map(int[]::clone).toArray(int[][]::new);
 
             for(int i = 0; i < myMoves.size(); i++){
                 int value = nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()];
@@ -92,7 +93,7 @@ public class MinMax {
             int meilleurScore = MAX;
             List<Move> myMoves = counterGen.obtenirListeMoves();
             Move meilleurMove = null;
-            int[][] nboard = this.board;
+            int[][] nboard = Arrays.stream(board).map(int[]::clone).toArray(int[][]::new);;
 
             for(int i = 0; i < myMoves.size(); i++){
                 int value = nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()];

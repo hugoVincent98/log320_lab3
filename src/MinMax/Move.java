@@ -1,4 +1,4 @@
-package MinMax;
+
 import java.awt.*;
 
 public class Move {
@@ -13,8 +13,8 @@ public class Move {
     this.arrive = new Point(xarrive, yarrive);
   }
 
-  public boolean estGagnant(){
-    if (arrive.getY() == 7 || arrive.getY() == 0){
+  public boolean estGagnant() {
+    if (arrive.getY() == 7 || arrive.getY() == 0) {
       return true;
     }
     return false;
@@ -36,5 +36,15 @@ public class Move {
     this.arrive = arrive;
   }
 
-  
+  @Override
+  public String toString() {
+    
+    char lettredepart = (char)(this.depart.y + 65);
+    int numerodepart = this.depart.x+1;
+
+    char lettrearrive = (char)(this.arrive.y + 65);
+    int numeroarrive = this.arrive.x + 1;
+    return lettredepart+""+numerodepart+"-"+lettrearrive+""+numeroarrive;
+  }
+
 }
