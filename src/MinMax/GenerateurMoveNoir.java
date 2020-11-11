@@ -31,7 +31,6 @@ public class GenerateurMoveNoir extends GenerateurMove {
           }
           
           if (estDeplacableDroite(i, j)) {
-            System.out.println("j-1 = "+(j-1));
             Move enDroiteBas = new Move(i, j, i - 1, j - 1);
             listemoves.add(enDroiteBas);
           }

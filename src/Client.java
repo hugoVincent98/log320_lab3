@@ -1,3 +1,4 @@
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -42,7 +43,7 @@ class Client {
 					boardValues = s.split(" ");
 					int x = 0, y = 0;
 					for (int i = 0; i < boardValues.length; i++) {
-						board[y][x] = Integer.parseInt(boardValues[i]);
+						board[x][y] = Integer.parseInt(boardValues[i]);
 						x++;
 						if (x == 8) {
 							x = 0;
@@ -53,12 +54,8 @@ class Client {
 					System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
 					String move = null;
 					
-					for(int i = 0 ; i < 8; i++){
-						for(int j = 0 ; j < 8 ; j++){
-							System.out.print(board[j][i]+" ");
-						}
-						System.out.println("");
-					}
+					printboard(board);
+
 					MinMax minmax = new MinMax(4, 4, 0, 0, board);
 					Move bestMove = minmax.getBestMove();
 					System.out.println("myMoveD: x:"+bestMove.getDepart().getX()+" y: "+bestMove.getDepart().getY());
@@ -82,13 +79,15 @@ class Client {
 					boardValues = s.split(" ");
 					int x = 0, y = 0;
 					for (int i = 0; i < boardValues.length; i++) {
-						board[y][x] = Integer.parseInt(boardValues[i]);
+						board[x][y] = Integer.parseInt(boardValues[i]);
 						x++;
 						if (x == 8) {
 							x = 0;
 							y++;
 						}
 					}
+
+					printboard(board);
 				}
 
 				// Le serveur demande le prochain coup
@@ -115,26 +114,32 @@ class Client {
 					char yNewChar = s.charAt(7);
 					int yNew = yNewChar - 49;
 
-					int value = board[yOld][xOld];
+					int value = board[xOld][yOld];
 					board[xOld][yOld] = 0;
 					board[xNew][yNew] = value;
 
-					for (int i = 0; i < 8; i++) {
-						for (int j = 0; j < 8; j++) {
-							System.out.print(board[i][j] + " ");
-						}
-						System.out.println("");
-					}
+					printboard(board);
 
 					System.out.println("Entrez votre coup : ");
 					String move = null;
+					
 					MinMax minmax = new MinMax(4, 4, 0, 0, board);
 					Move bestMove = minmax.getBestMove();
 					System.out.println("myMoveD: x:"+bestMove.getDepart().getX()+" y: "+bestMove.getDepart().getY());
 					System.out.println("myMoveF: x:"+bestMove.getArrive().getX()+" y: "+bestMove.getArrive().getY());
-					//move = console.readLine();
-					System.out.println(bestMove);
+					
+					System.out.println("le move : " + bestMove.toString());
+					// update le board local
+					
+					value = board[bestMove.getDepart().x][bestMove.getDepart().y];
+					board[bestMove.getDepart().x][bestMove.getDepart().y] = 0;
+					board[bestMove.getArrive().x][bestMove.getArrive().y] = value;
+					
+					printboard(board);
+					
+					
 					move = bestMove.toString();
+					//move = console.readLine();
 					output.write(move.getBytes(), 0, move.length());
 					output.flush();
 
@@ -169,5 +174,14 @@ class Client {
 
 		
 
+	}
+
+	static void printboard(int[][] b) {
+		for(int i = 0 ; i < 8; i++){
+			for(int j = 0 ; j < 8 ; j++){
+				System.out.print(b[i][j]+" ");
+			}
+			System.out.println("");
+		}
 	}
 }

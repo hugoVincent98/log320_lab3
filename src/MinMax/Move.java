@@ -39,11 +39,11 @@ public class Move {
   @Override
   public String toString() {
     
-    char lettredepart = (char)(this.depart.y + 65);
-    int numerodepart = this.depart.x+1;
+    char lettredepart = (char)(this.depart.x + 65);
+    char numerodepart = (char)(this.depart.y+49);
 
-    char lettrearrive = (char)(this.arrive.y + 65);
-    int numeroarrive = this.arrive.x + 1;
+    char lettrearrive = (char)(this.arrive.x + 65);
+    char numeroarrive = (char)(this.arrive.y + 49);
     return lettredepart+""+numerodepart+"-"+lettrearrive+""+numeroarrive;
   }
 

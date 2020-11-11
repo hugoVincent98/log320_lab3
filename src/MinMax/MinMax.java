@@ -13,46 +13,47 @@ public class MinMax {
     GenerateurMove gen;
     GenerateurMove counterGen;
 
-    public MinMax(int toMin, int toMax, int alpha, int beta, int[][] board){;
+    public MinMax(int toMin, int toMax, int alpha, int beta, int[][] board) {
+        
         this.board = board;
         this.toMax = toMax;
         this.toMin = toMin;
-        if(toMax == 2){
+        if (toMax == 2) {
             gen = new GenerateurMoveRouge(this.board);
             counterGen = new GenerateurMoveNoir(this.board);
         }
-        if (toMax == 4){
+        if (toMax == 4) {
             gen = new GenerateurMoveNoir(board);
             counterGen = new GenerateurMoveRouge(this.board);
         }
     }
 
-    public void updateBoard(int[][]board){
+    public void updateBoard(int[][] board) {
         this.board = board;
-        if(toMax == 2){
+        if (toMax == 2) {
             gen = new GenerateurMoveRouge(this.board);
             counterGen = new GenerateurMoveNoir(this.board);
         }
-        if (toMax == 4){
+        if (toMax == 4) {
             gen = new GenerateurMoveNoir(board);
             counterGen = new GenerateurMoveRouge(this.board);
         }
     }
 
-    public Move getBestMove(){
+    public Move getBestMove() {
         int meilleurScore = MIN;
         List<Move> myMoves = gen.obtenirListeMoves();
         Move meilleurMove = null;
-        int[][] nboard = Arrays.stream(this.board).map(int[]::clone).toArray(int[][]::new);
+        int[][] nboard = copy(this.board);
 
-        for(int i = 0; i < myMoves.size(); i++){
-            int value = nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()];
-            nboard[(int)myMoves.get(i).arrive.getX()][(int)myMoves.get(i).arrive.getY()] = value;
-            nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()] = 0;
+        for (int i = 0; i < myMoves.size(); i++) {
+            int value = nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()];
+            nboard[(int) myMoves.get(i).arrive.getX()][(int) myMoves.get(i).arrive.getY()] = value;
+            nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()] = 0;
 
             int score = miniMax(nboard, 0, false);
 
-            if (score > meilleurScore){
+            if (score > meilleurScore) {
                 meilleurScore = score;
                 meilleurMove = myMoves.get(i);
 
@@ -63,46 +64,47 @@ public class MinMax {
         return meilleurMove;
     }
 
+    public int miniMax(int[][] board, int depth, boolean isMax) {
 
-    public int miniMax(int [][] board ,int depth, boolean isMax ){
-        if (checkWinner() != 0){
+        if (checkWinner() != 0 || depth > 1) {
             return END;
         }
 
-        if(isMax){
+        if (isMax) {
             int meilleurScore = MIN;
             List<Move> myMoves = gen.obtenirListeMoves();
             Move meilleurMove = null;
-            int[][] nboard = Arrays.stream(board).map(int[]::clone).toArray(int[][]::new);
+            int[][] nboard = copy(board);
 
-            for(int i = 0; i < myMoves.size(); i++){
-                int value = nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()];
-                nboard[(int)myMoves.get(i).arrive.getX()][(int)myMoves.get(i).arrive.getY()] = value;
-                nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()] = 0;
-    
-                int score = miniMax(nboard, 0, false);
+            for (int i = 0; i < myMoves.size(); i++) {
+                int value = nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()];
+                nboard[(int) myMoves.get(i).arrive.getX()][(int) myMoves.get(i).arrive.getY()] = value;
+                nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()] = 0;
 
-                if (score > meilleurScore){
+                int score = miniMax(nboard, depth + 1, false);
+
+                if (score > meilleurScore) {
                     meilleurScore = score;
                     meilleurMove = myMoves.get(i);
 
                 }
             }
             return meilleurScore;
-        }else{
+        } else {
             int meilleurScore = MAX;
             List<Move> myMoves = counterGen.obtenirListeMoves();
             Move meilleurMove = null;
-            int[][] nboard = Arrays.stream(board).map(int[]::clone).toArray(int[][]::new);;
+            int[][] nboard = Arrays.stream(board).map(int[]::clone).toArray(int[][]::new);
+            ;
 
-            for(int i = 0; i < myMoves.size(); i++){
-                int value = nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()];
-                nboard[(int)myMoves.get(i).arrive.getX()][(int)myMoves.get(i).arrive.getY()] = value;
-                nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()] = 0;
-    
-                int score = miniMax(nboard, 0, true);
+            for (int i = 0; i < myMoves.size(); i++) {
+                int value = nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()];
+                nboard[(int) myMoves.get(i).arrive.getX()][(int) myMoves.get(i).arrive.getY()] = value;
+                nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()] = 0;
 
-                if (score < meilleurScore){
+                int score = miniMax(nboard, depth + 1, true);
+
+                if (score < meilleurScore) {
                     meilleurScore = score;
                     meilleurMove = myMoves.get(i);
 
@@ -112,24 +114,24 @@ public class MinMax {
         }
     }
 
-    public int checkWinner(){
-        if(toMax == 2){
-            for(int j = 0; j < 8; j++ ){
-                if(board[0][j]==4){
+    public int checkWinner() {
+        if (toMax == 2) {
+            for (int j = 0; j < 8; j++) {
+                if (board[0][j] == 4) {
                     return -1;
                 }
-                if(board[7][j]==2){
+                if (board[7][j] == 2) {
                     return 1;
-                } 
+                }
             }
         }
 
-        if(toMax == 4){
-            for(int j = 0; j < 8; j++ ){
-                if(board[7][j]==2){
+        if (toMax == 4) {
+            for (int j = 0; j < 8; j++) {
+                if (board[7][j] == 2) {
                     return -1;
                 }
-                if(board[0][j]==4){
+                if (board[0][j] == 4) {
                     return 1;
                 }
             }
@@ -137,8 +139,12 @@ public class MinMax {
         return 0;
     }
 
+    public static int[][] copy(int[][] src) {
+        int[][] dst = new int[src.length][];
+        for (int i = 0; i < src.length; i++) {
+            dst[i] = Arrays.copyOf(src[i], src[i].length);
+        }
+        return dst;
+    }
 
-
-
-    
 }
