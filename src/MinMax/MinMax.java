@@ -9,12 +9,10 @@ public class MinMax {
     int toMax;
     int toMin;
     int[][] board;
-    Tree tree;
     GenerateurMove gen;
     GenerateurMove counterGen;
 
-    public MinMax(int toMin, int toMax, int alpha, int beta, int[][] board){
-        tree = new Tree();
+    public MinMax(int toMin, int toMax, int alpha, int beta, int[][] board){;
         this.board = board;
         this.toMax = toMax;
         this.toMin = toMin;

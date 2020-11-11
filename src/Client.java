@@ -5,11 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import MinMax.GenerateurMove;
-import MinMax.GenerateurMoveNoir;
-import MinMax.GenerateurMoveRouge;
-import MinMax.MinMax;
-
+import MinMax.*;
 class Client {
 
 	static final int ROUGE = 2;
@@ -46,7 +42,7 @@ class Client {
 					boardValues = s.split(" ");
 					int x = 0, y = 0;
 					for (int i = 0; i < boardValues.length; i++) {
-						board[x][y] = Integer.parseInt(boardValues[i]);
+						board[y][x] = Integer.parseInt(boardValues[i]);
 						x++;
 						if (x == 8) {
 							x = 0;
@@ -56,13 +52,21 @@ class Client {
 
 					System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
 					String move = null;
+					
+					for(int i = 0 ; i < 8; i++){
+						for(int j = 0 ; j < 8 ; j++){
+							System.out.print(board[j][i]+" ");
+						}
+						System.out.println("");
+					}
+					MinMax minmax = new MinMax(4, 4, 0, 0, board);
+					Move bestMove = minmax.getBestMove();
+					System.out.println("myMoveD: x:"+bestMove.getDepart().getX()+" y: "+bestMove.getDepart().getY());
+					System.out.println("myMoveF: x:"+bestMove.getArrive().getX()+" y: "+bestMove.getArrive().getY());
+
 					move = console.readLine();
 					output.write(move.getBytes(), 0, move.length());
 					output.flush();
-
-					//TODO envoyer des moves
-					MinMax minmax = new MinMax(4, 2, 0, 0, board);
-					minmax.getBestMove();
 				}
 				// Debut de la partie en joueur Noir
 				if (cmd == '2') {
@@ -78,17 +82,13 @@ class Client {
 					boardValues = s.split(" ");
 					int x = 0, y = 0;
 					for (int i = 0; i < boardValues.length; i++) {
-						board[x][y] = Integer.parseInt(boardValues[i]);
+						board[y][x] = Integer.parseInt(boardValues[i]);
 						x++;
 						if (x == 8) {
 							x = 0;
 							y++;
 						}
 					}
-
-					//TODO envoyer des move
-					MinMax minmax = new MinMax(4, 4, 0, 0, board);
-					System.out.println("myMove: "+minmax.getBestMove(););
 				}
 
 				// Le serveur demande le prochain coup
@@ -128,6 +128,10 @@ class Client {
 
 					System.out.println("Entrez votre coup : ");
 					String move = null;
+					MinMax minmax = new MinMax(4, 4, 0, 0, board);
+					Move bestMove = minmax.getBestMove();
+					System.out.println("myMoveF: x:"+bestMove.getArrive().getX()+" y: "+bestMove.getArrive().getY());
+					System.out.println("myMoveD: x:"+bestMove.getDepart().getX()+" y: "+bestMove.getDepart().getY());
 					move = console.readLine();
 					output.write(move.getBytes(), 0, move.length());
 					output.flush();

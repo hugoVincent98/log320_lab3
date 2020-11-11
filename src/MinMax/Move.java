@@ -19,4 +19,22 @@ public class Move {
     }
     return false;
   }
+
+  public Point getDepart() {
+    return depart;
+  }
+
+  public void setDepart(Point depart) {
+    this.depart = depart;
+  }
+
+  public Point getArrive() {
+    return arrive;
+  }
+
+  public void setArrive(Point arrive) {
+    this.arrive = arrive;
+  }
+
+  
 }
