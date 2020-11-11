@@ -1,4 +1,4 @@
-package MinMax;
+package src.MinMax;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,17 +16,20 @@ public class GenerateurMoveRouge extends GenerateurMove {
 
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
+        //System.out.print(board[i][j]+" ");
 
         if (estRouge(board[i][j])) {
 
           // deplacement à gauche
+
           if (estDeplacableGauche(i, j)) {
-            Move enDroiteHaut = new Move(i, j, i + 1, j - 1);
+            
+            Move enDroiteHaut = new Move(i, j, i - 1, j + 1);
             listeMoves.add(enDroiteHaut);
           }
           // deplacement au centre
           if (estDeplacableDevant(i, j)) {
-            Move enDroiteCentre = new Move(i, j, i+1, j);
+            Move enDroiteCentre = new Move(i, j, i, j+1);
             listeMoves.add(enDroiteCentre);
           }
 
@@ -37,17 +40,19 @@ public class GenerateurMoveRouge extends GenerateurMove {
 
         }
       }
+     // System.out.println("");
     }
     return listeMoves;
   }
 
+  //0-1
   boolean estDeplacableGauche(int i, int j) {
     // ne pas sortir du board a gauche
-    if (j == 0 || i==7)
+    if (i == 0 || j==7)
       return false;
 
     // si le pion a gauche est rouge
-    return !estRouge(board[i + 1][j - 1]);
+    return !estRouge(board[i - 1][j + 1]);
   }
 
   boolean estDeplacableDroite(int i, int j) {
@@ -60,9 +65,9 @@ public class GenerateurMoveRouge extends GenerateurMove {
   }
 
   boolean estDeplacableDevant(int i, int j) {
-    if (i==7)
+    if (j==7)
       return false;
 
-    return estVide(board[i+1][j]);
+    return estVide(board[i][j+1]);
   }
 }

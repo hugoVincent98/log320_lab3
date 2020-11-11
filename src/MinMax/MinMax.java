@@ -1,4 +1,4 @@
-package MinMax;
+package src.MinMax;
 import java.util.List;
 import java.util.Arrays;
 
@@ -47,16 +47,18 @@ public class MinMax {
         Move meilleurMove = null;
         int[][] nboard = copy(this.board);
 
-        for(int i = 0; i < myMoves.size(); i++){
-            int value = nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()];
-            nboard[(int)myMoves.get(i).arrive.getX()][(int)myMoves.get(i).arrive.getY()] = value;
-            nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()] = 0;
-
+        for (Move m : myMoves) {
+            int value = nboard[(int)m.depart.getX()][(int)m.depart.getY()];
+            nboard[(int)m.arrive.getX()][(int)m.arrive.getY()] = value;
+            nboard[(int)m.depart.getX()][(int)m.depart.getY()] = 0;
+            
+            System.out.println(" myMoves "+ m.toCoordinate());
+            
             int score = miniMax(nboard, 0, false,MIN,MAX);
 
             if (score > meilleurScore){
                 meilleurScore = score;
-                meilleurMove = myMoves.get(i);
+                meilleurMove = m;
 
             }
         }
@@ -67,7 +69,7 @@ public class MinMax {
 
 
     public int miniMax(int [][] board ,int depth, boolean isMax, int alpha, int beta ){
-        if (checkWinner() != 0||depth > 10){
+        if (checkWinner() != 0||depth > 3){
             return END;
         }
 
@@ -81,6 +83,8 @@ public class MinMax {
                 int value = nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()];
                 nboard[(int)myMoves.get(i).arrive.getX()][(int)myMoves.get(i).arrive.getY()] = value;
                 nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()] = 0;
+
+              
     
                 int score = miniMax(nboard, depth +1, false,alpha ,beta);
 

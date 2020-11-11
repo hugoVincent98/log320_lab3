@@ -1,4 +1,4 @@
-package MinMax;
+package src.MinMax;
 import java.awt.*;
 
 public class Move {
@@ -45,6 +45,10 @@ public class Move {
     char lettrearrive = (char)(this.arrive.x + 65);
     char numeroarrive = (char)(this.arrive.y + 49);
     return lettredepart+""+numerodepart+"-"+lettrearrive+""+numeroarrive;
+  }
+
+  public String toCoordinate() {
+    return "Depart  : [x=" + this.depart.x + ",y=" + this.depart.y+"]   Arrivé : [x=" + this.arrive.x + ",y=" + this.arrive.y+"]";
   }
 
 }

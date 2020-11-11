@@ -1,3 +1,4 @@
+package src;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -6,7 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import MinMax.*;
+import src.MinMax.*;
+
 class Client {
 
 	static final int ROUGE = 2;
@@ -18,7 +20,6 @@ class Client {
 		BufferedInputStream input;
 		BufferedOutputStream output;
 		int[][] board = new int[8][8];
-		GenerateurMove generateurMouvement;
 
 		try (Socket myClient = new Socket("localhost", 8888)) {
 
@@ -51,17 +52,17 @@ class Client {
 						}
 					}
 
-					System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
+					System.out.println("Nouvelle partie! Vous jouer rouge, entrez votre premier coup : ");
 					String move = null;
 					
 					printboard(board);
 
-					MinMax minmax = new MinMax(4, 4,board);
+					MinMax minmax = new MinMax(4,2,board);
 					Move bestMove = minmax.getBestMove();
 					System.out.println("myMoveD: x:"+bestMove.getDepart().getX()+" y: "+bestMove.getDepart().getY());
 					System.out.println("myMoveF: x:"+bestMove.getArrive().getX()+" y: "+bestMove.getArrive().getY());
 
-					move = console.readLine();
+					move = bestMove.toString();
 					output.write(move.getBytes(), 0, move.length());
 					output.flush();
 				}
