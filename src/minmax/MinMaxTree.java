@@ -1,3 +1,4 @@
+package MinMax;
 import java.util.*;
 
 

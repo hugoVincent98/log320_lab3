@@ -1,4 +1,4 @@
-
+package MinMax;
 import java.awt.*;
 
 public class Move {
