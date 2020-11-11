@@ -22,12 +22,12 @@ public class GenerateurMoveRouge extends GenerateurMove {
 
           // deplacement à gauche
           if (estDeplacableGauche(i, j)) {
-            Move enDroiteHaut = new Move(i, j, i - 1, j + 1);
+            Move enDroiteHaut = new Move(i, j, i + 1, j - 1);
             listeMoves.add(enDroiteHaut);
           }
           // deplacement au centre
           if (estDeplacableDevant(i, j)) {
-            Move enDroiteCentre = new Move(i, j, i, j + 1);
+            Move enDroiteCentre = new Move(i, j, i+1, j);
             listeMoves.add(enDroiteCentre);
           }
 

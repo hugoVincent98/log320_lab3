@@ -19,10 +19,6 @@ public class GenerateurMoveNoir extends GenerateurMove {
       for (int j = 0; j < 8; j++) {
 
         if (estNoir(board[i][j])) {
-          System.out.println("i: "+ i + "j: "+ j);
-          System.out.println("g: "+ estDeplacableGauche(i, j));
-          System.out.println("c: "+ estDeplacableDevant(i, j));
-          System.out.println("d: "+ estDeplacableDroite(i, j));
 
           // deplacement à gauche
           if (estDeplacableGauche(i, j)) {
@@ -34,8 +30,9 @@ public class GenerateurMoveNoir extends GenerateurMove {
             Move enDroiteCentre = new Move(i, j, i - 1, j);
             listemoves.add(enDroiteCentre);
           }
-
-          if (!estDeplacableDroite(i, j)) {
+          
+          if (estDeplacableDroite(i, j)) {
+            System.out.println("j-1 = "+(j-1));
             Move enDroiteBas = new Move(i, j, i - 1, j - 1);
             listemoves.add(enDroiteBas);
           }

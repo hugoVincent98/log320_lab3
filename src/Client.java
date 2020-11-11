@@ -8,6 +8,7 @@ import java.net.Socket;
 import MinMax.GenerateurMove;
 import MinMax.GenerateurMoveNoir;
 import MinMax.GenerateurMoveRouge;
+import MinMax.MinMax;
 
 class Client {
 
@@ -53,12 +54,15 @@ class Client {
 						}
 					}
 
-					generateurMouvement = new GenerateurMoveRouge(board);
 					System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
 					String move = null;
 					move = console.readLine();
 					output.write(move.getBytes(), 0, move.length());
 					output.flush();
+
+					//TODO envoyer des moves
+					MinMax minmax = new MinMax(4, 2, 0, 0, board);
+					minmax.getBestMove();
 				}
 				// Debut de la partie en joueur Noir
 				if (cmd == '2') {
@@ -81,7 +85,10 @@ class Client {
 							y++;
 						}
 					}
-					generateurMouvement = new GenerateurMoveNoir(board);
+
+					//TODO envoyer des move
+					MinMax minmax = new MinMax(4, 4, 0, 0, board);
+					System.out.println("myMove: "+minmax.getBestMove(););
 				}
 
 				// Le serveur demande le prochain coup
