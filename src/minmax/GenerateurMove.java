@@ -1,4 +1,4 @@
-package src.MinMax;
+package MinMax;
 
 import java.util.List;
 

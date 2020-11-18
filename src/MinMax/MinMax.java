@@ -1,5 +1,6 @@
-package src.MinMax;
+package MinMax;
 import java.util.List;
+import java.io.Console;
 import java.util.Arrays;
 
 public class MinMax {
@@ -59,8 +60,8 @@ public class MinMax {
             if (score > meilleurScore){
                 meilleurScore = score;
                 meilleurMove = m;
-
             }
+            System.out.println("meilleur score: "+ score);
         }
 
         board = nboard;
@@ -69,6 +70,7 @@ public class MinMax {
 
 
     public int miniMax(int [][] board ,int depth, boolean isMax, int alpha, int beta ){
+
         if (checkWinner() != 0||depth > 3){
             return END;
         }
@@ -83,7 +85,6 @@ public class MinMax {
                 int value = nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()];
                 nboard[(int)myMoves.get(i).arrive.getX()][(int)myMoves.get(i).arrive.getY()] = value;
                 nboard[(int)myMoves.get(i).depart.getX()][(int)myMoves.get(i).depart.getY()] = 0;
-
               
     
                 int score = miniMax(nboard, depth +1, false,alpha ,beta);

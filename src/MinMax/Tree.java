@@ -1,4 +1,4 @@
-package src.MinMax;
+package MinMax;
 public class Tree {
     Node root;
 

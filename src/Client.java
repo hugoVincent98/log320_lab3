@@ -1,4 +1,4 @@
-package src;
+import MinMax.*;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import src.MinMax.*;
 
 class Client {
 
@@ -20,6 +19,7 @@ class Client {
 		BufferedInputStream input;
 		BufferedOutputStream output;
 		int[][] board = new int[8][8];
+		int player = 2;
 
 		try (Socket myClient = new Socket("localhost", 8888)) {
 
@@ -34,6 +34,7 @@ class Client {
 				// Debut de la partie en joueur rouge
 				if (cmd == '1') {
 					byte[] aBuffer = new byte[1024];
+					player = 2;
 
 					int size = input.available();
 					// System.out.println("size " + size);
@@ -57,10 +58,17 @@ class Client {
 					
 					printboard(board);
 
-					MinMax minmax = new MinMax(4,2,board);
+					MinMax minmax = new MinMax(4,player,board);
 					Move bestMove = minmax.getBestMove();
-					System.out.println("myMoveD: x:"+bestMove.getDepart().getX()+" y: "+bestMove.getDepart().getY());
-					System.out.println("myMoveF: x:"+bestMove.getArrive().getX()+" y: "+bestMove.getArrive().getY());
+					
+					System.out.println("le move : " + bestMove.toString());
+					// update le board local
+					int value;
+					value = board[bestMove.getDepart().x][bestMove.getDepart().y];
+					board[bestMove.getDepart().x][bestMove.getDepart().y] = 0;
+					board[bestMove.getArrive().x][bestMove.getArrive().y] = value;
+					
+					printboard(board);
 
 					move = bestMove.toString();
 					output.write(move.getBytes(), 0, move.length());
@@ -70,6 +78,7 @@ class Client {
 				if (cmd == '2') {
 					System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des blancs");
 					byte[] aBuffer = new byte[1024];
+					player = 4;
 
 					int size = input.available();
 					// System.out.println("size " + size);
@@ -124,10 +133,8 @@ class Client {
 					System.out.println("Entrez votre coup : ");
 					String move = null;
 					
-					MinMax minmax = new MinMax(4, 4,board);
+					MinMax minmax = new MinMax(4,player,board);
 					Move bestMove = minmax.getBestMove();
-					System.out.println("myMoveD: x:"+bestMove.getDepart().getX()+" y: "+bestMove.getDepart().getY());
-					System.out.println("myMoveF: x:"+bestMove.getArrive().getX()+" y: "+bestMove.getArrive().getY());
 					
 					System.out.println("le move : " + bestMove.toString());
 					// update le board local
