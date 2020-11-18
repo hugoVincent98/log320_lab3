@@ -3,6 +3,7 @@ import java.util.List;
 import java.io.Console;
 import java.util.Arrays;
 
+//fonctionnel
 public class MinMax {
     static int MAX = 100000;
     static int MIN = -100000;
