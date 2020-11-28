@@ -17,7 +17,7 @@ public class MinMax {
     GenerateurMove counterGen;
 
     public MinMax(int toMin, int toMax, int[][] board, int turn) {
-        
+
         this.turn = turn;
         this.board = board;
         this.toMax = toMax;
@@ -51,21 +51,17 @@ public class MinMax {
         Move meilleurMove = null;
         int[][] nboard = new int[8][8];
 
-        if (procedureEstApplicable()) {
-
-        }
-
         for (Move m : myMoves) {
             // Pour chaque mouvements possibles, on va analyser son score
             nboard = copy(this.board);
-            int score = getValueOfBoard(board, m);
+            int score = getValueOfBoard(board, m, 0);
             int value = nboard[(int) m.depart.getX()][(int) m.depart.getY()];
             nboard[(int) m.arrive.getX()][(int) m.arrive.getY()] = value;
             nboard[(int) m.depart.getX()][(int) m.depart.getY()] = 0;
 
             System.out.println(" myMoves " + m.toCoordinate());
 
-            score = score +  miniMax(nboard, 0, false, MIN, MAX);
+            score = score + miniMax(nboard, 0, false, MIN, MAX);
 
             // on prend toujours le meilleur score
             if (score > meilleurScore) {
@@ -77,11 +73,6 @@ public class MinMax {
 
         board = nboard;
         return meilleurMove;
-    }
-
-    private boolean procedureEstApplicable() {
-        
-        return this.turn < 7;
     }
 
     private final int MAXDEPTH = 0;
@@ -136,7 +127,7 @@ public class MinMax {
             int[][] nboard = copy(board);
 
             for (int i = 0; i < myMoves.size(); i++) {
-               int score = 0; //getValueOfBoard(board, myMoves.get(i));
+                int score = 0; // getValueOfBoard(board, myMoves.get(i));
                 int value = nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()];
                 nboard[(int) myMoves.get(i).arrive.getX()][(int) myMoves.get(i).arrive.getY()] = value;
                 nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()] = 0;
@@ -189,73 +180,71 @@ public class MinMax {
     }
 
     // test (on joue les noirs)
-    public int getValueOfBoard(int[][] board,Move mouvement) {
+    public int getValueOfBoard(int[][] board, Move mouvement, int depth) {
         int value = 0;
-        // empecher 3 dernieres col
-        if(toMax == 4){
+
+        // danger value les rouges dans les 3 dernières col 
+        if (toMax == 4) {
             if (board[mouvement.arrive.x][mouvement.arrive.y] == 2 && mouvement.arrive.y > 4) {
                 value = value + 10000;
             }
 
-            // pion noir de B7 à C6
-            if(turn == 1 && mouvement.depart.equals(1,6) && mouvement.arrive.equals(2,5)){
-                value = value + 1000;
-            }
-            // pion noir de G7 à F6
-            if(turn == 2 && mouvement.depart.x == 6 && mouvement.depart.y == 6 && mouvement.arrive.x == 5 && mouvement.arrive.y == 5){
-                value = value + 1000;
-            }
+            if (depth == 0) {
 
-            // pion noir de A8 à B7
-            if(turn == 3 && mouvement.depart.x == 0 && mouvement.depart.y == 7 && mouvement.arrive.x == 1 && mouvement.arrive.y == 6){
-                value = value + 1000;
-            }
-            // pion noir de H8 à G7
-            if(turn == 4 && mouvement.depart.x == 7 && mouvement.depart.y == 7 && mouvement.arrive.x == 6 && mouvement.arrive.y == 6){
-                value = value + 1000;
-            }
+                // pion noir de B7 à C6
+                if (turn == 1 && mouvement.depart.equals(1, 6) && mouvement.arrive.equals(2, 5)) {
+                    value = value + 1000;
+                }
+                // pion noir de G7 à F6
+                if (turn == 2 && mouvement.depart.equals(6, 6) && mouvement.arrive.equals(5, 5)) {
+                    value = value + 1000;
+                }
 
-            // pion noir de A7 à B6
-            if(turn == 5 && mouvement.depart.x == 0 && mouvement.depart.y == 6 && mouvement.arrive.x == 1 && mouvement.arrive.y == 5){
-                value = value + 1000;
-            }
+                // pion noir de A8 à B7
+                if (turn == 3 && mouvement.depart.equals(0, 7) && mouvement.arrive.equals(1, 6)) {
+                    value = value + 1000;
+                }
+                // pion noir de H8 à G7
+                if (turn == 4 && mouvement.depart.equals(7, 7) && mouvement.arrive.equals(6, 6)) {
+                    value = value + 1000;
+                }
 
-            // pion noir de H7 à G6
-            if(turn == 6 && mouvement.depart.x == 7 && mouvement.depart.y == 6 && mouvement.arrive.x == 6 && mouvement.arrive.y == 5){
-                value = value + 1000;
+                // pion noir de A7 à B6
+                if (turn == 5 && mouvement.depart.equals(0, 6) && mouvement.arrive.equals(1, 5)) {
+                    value = value + 1000;
+                }
+
+                // pion noir de H7 à G6
+                if (turn == 6 && mouvement.depart.equals(7, 6) && mouvement.arrive.equals(6, 5)) {
+                    value = value + 1000;
+                }
             }
         }
 
-        /*if(toMax = 2){
-            if (board[mouvement.arrive.x][mouvement.arrive.y] == 2 && mouvement.arrive.y > 4) {
-                value = value + 10000;
-            }
-
-            // mettre de B7 à C6
-            if(turn == 1 && mouvement.depart.x == 1 && mouvement.depart.y ==  && mouvement.arrive.x == 2 && mouvement.arrive.y == 2){
-                value = value + 1000;
-            }
-            
-            if(turn == 2 && mouvement.depart.x == 1 && mouvement.depart.y ==  && mouvement.arrive.x == ){
-                value = value + 1000;
-            }
-
-            if(turn == 3 && mouvement.depart.x == 1 && mouvement.depart.y ==  && mouvement.arrive.x == ){
-                value = value + 1000;
-            }
-
-            if(turn == 4 && mouvement.depart.x == 1 && mouvement.depart.y ==  && mouvement.arrive.x == ){
-                value = value + 1000;
-            }
-
-            if(turn == 5 && mouvement.depart.x == 1 && mouvement.depart.y ==  && mouvement.arrive.x == ){
-                value = value + 1000;
-            }
-
-            if(turn == 6 && mouvement.depart.x == 1 && mouvement.depart.y ==  && mouvement.arrive.x == ){
-                value = value + 1000;
-            }*/
-        //}
+        /*
+         * if(toMax = 2){ if (board[mouvement.arrive.x][mouvement.arrive.y] == 2 &&
+         * mouvement.arrive.y > 4) { value = value + 10000; }
+         * 
+         * // mettre de B7 à C6 if(turn == 1 && mouvement.depart.x == 1 &&
+         * mouvement.depart.y == && mouvement.arrive.x == 2 && mouvement.arrive.y == 2){
+         * value = value + 1000; }
+         * 
+         * if(turn == 2 && mouvement.depart.x == 1 && mouvement.depart.y == &&
+         * mouvement.arrive.x == ){ value = value + 1000; }
+         * 
+         * if(turn == 3 && mouvement.depart.x == 1 && mouvement.depart.y == &&
+         * mouvement.arrive.x == ){ value = value + 1000; }
+         * 
+         * if(turn == 4 && mouvement.depart.x == 1 && mouvement.depart.y == &&
+         * mouvement.arrive.x == ){ value = value + 1000; }
+         * 
+         * if(turn == 5 && mouvement.depart.x == 1 && mouvement.depart.y == &&
+         * mouvement.arrive.x == ){ value = value + 1000; }
+         * 
+         * if(turn == 6 && mouvement.depart.x == 1 && mouvement.depart.y == &&
+         * mouvement.arrive.x == ){ value = value + 1000; }
+         */
+        // }
         return value;
     }
 }
