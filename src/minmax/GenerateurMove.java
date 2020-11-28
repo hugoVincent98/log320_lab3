@@ -30,6 +30,8 @@ public abstract class GenerateurMove {
     protected boolean estVide(int emplacement) {
         return emplacement == 0;
     }
+    abstract GenerateurMove newInstance(int[][] board);
+
 
     abstract boolean estDeplacableGauche(int xdepart, int ydepart);
 

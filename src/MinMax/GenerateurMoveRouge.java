@@ -8,6 +8,13 @@ public class GenerateurMoveRouge extends GenerateurMove {
     super(board);
     // TODO Auto-generated constructor stub
   }
+  
+  @Override
+  public GenerateurMove newInstance(int[][] board) {
+    // TODO Auto-generated method stub
+    return new GenerateurMoveRouge(board);
+  }
+
 
   @Override
   public List<Move> obtenirListeMoves() {

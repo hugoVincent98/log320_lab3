@@ -10,6 +10,12 @@ public class GenerateurMoveNoir extends GenerateurMove {
   }
 
   @Override
+  public GenerateurMove newInstance(int[][] board) {
+    // TODO Auto-generated method stub
+    return new GenerateurMoveNoir(board);
+  }
+
+  @Override
   public List<Move> obtenirListeMoves() {
     // TODO Auto-generated method stub
     ArrayList<Move> listemoves = new ArrayList<>();
