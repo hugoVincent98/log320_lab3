@@ -20,6 +20,7 @@ class Client {
 		BufferedOutputStream output;
 		int[][] board = new int[8][8];
 		int player = 2;
+		int counterTurn = 0;
 
 		try (Socket myClient = new Socket("localhost", 8888)) {
 
@@ -57,8 +58,10 @@ class Client {
 					String move = null;
 					
 					printboard(board);
+					
+					counterTurn++;
 
-					MinMax minmax = new MinMax(4,player,board);
+					MinMax minmax = new MinMax(4,player,board,counterTurn);
 					Move bestMove = minmax.getBestMove();
 					
 					System.out.println("le move : " + bestMove.toString());
@@ -132,8 +135,10 @@ class Client {
 
 					System.out.println("Entrez votre coup : ");
 					String move = null;
+
+					counterTurn++;
 					
-					MinMax minmax = new MinMax(4,player,board);
+					MinMax minmax = new MinMax(4,player,board,counterTurn);
 					Move bestMove = minmax.getBestMove();
 					
 					System.out.println("le move : " + bestMove.toString());

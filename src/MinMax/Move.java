@@ -3,14 +3,14 @@ import java.awt.*;
 
 public class Move {
 
-  Point depart;
-  Point arrive;
+  MovePoint depart;
+  MovePoint arrive;
 
   public Move(int xdepart, int ydepart, int xarrive, int yarrive) {
 
-    this.depart = new Point(xdepart, ydepart);
+    this.depart = new MovePoint(xdepart, ydepart);
 
-    this.arrive = new Point(xarrive, yarrive);
+    this.arrive = new MovePoint(xarrive, yarrive);
   }
 
   public boolean estGagnant() {
@@ -24,7 +24,7 @@ public class Move {
     return depart;
   }
 
-  public void setDepart(Point depart) {
+  public void setDepart(MovePoint depart) {
     this.depart = depart;
   }
 
@@ -32,7 +32,7 @@ public class Move {
     return arrive;
   }
 
-  public void setArrive(Point arrive) {
+  public void setArrive(MovePoint arrive) {
     this.arrive = arrive;
   }
 
@@ -46,6 +46,7 @@ public class Move {
     char numeroarrive = (char)(this.arrive.y + 49);
     return lettredepart+""+numerodepart+"-"+lettrearrive+""+numeroarrive;
   }
+
 
   public String toCoordinate() {
     return "Depart  : [x=" + this.depart.x + ",y=" + this.depart.y+"]   Arrivé : [x=" + this.arrive.x + ",y=" + this.arrive.y+"]";
