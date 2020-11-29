@@ -212,38 +212,49 @@ public class MinMax {
                     value += VALUE_DEFENCE;
                 }
 
-                value +=10;
+                value += 10;
+            }
+
+            // regard si move est suicide a gauche
+            if (mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1
+                    && board[mouvement.arrive.x + 1][mouvement.arrive.y + -1] == ROUGE) {
+                value -= 100;
+
+            }
+
+            // regard si move est suicide a droite
+            if (mouvement.arrive.x >= 1 && mouvement.arrive.y >= 1
+                    && board[mouvement.arrive.x - 1][mouvement.arrive.y - 1] == ROUGE) {
+                value -= 100;
             }
 
             // regard si il va avoir du backup apres son move a gauche
 
-            if (mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1
-                    && board[mouvement.arrive.x + 1][mouvement.arrive.y - 1] == NOIR) {
+            if (mouvement.depart.y != 7 && mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1
+                    && board[mouvement.arrive.x + 1][mouvement.arrive.y + 1] == NOIR) {
                 value += VALUE_DEFENCE;
             }
 
             // regard si il va avoirt du backup apres son move a droite
 
-            if (mouvement.arrive.x >= 1 && mouvement.arrive.y >= 1
-                    && board[mouvement.arrive.x - 1][mouvement.arrive.y - 1] == NOIR) {
+            if (mouvement.depart.y != 7 && mouvement.arrive.x >= 1 && mouvement.arrive.y >= 1
+                    && board[mouvement.arrive.x - 1][mouvement.arrive.y + 1] == NOIR) {
                 value += VALUE_DEFENCE;
             }
-
             // danger value les rouges dans les 3 dernières col
             if (depth == 0 && board[mouvement.arrive.x][mouvement.arrive.y] == ROUGE && mouvement.arrive.y > 4) {
                 value = value + DANGER_3_LAST_COL;
 
             }
-            if (board[mouvement.arrive.x][mouvement.arrive.y] == ROUGE && mouvement.depart.y < 6) {
-                // regarder ligne 8 et 7 si il y a des alliés sur un range de 3 x
-                int compteur = 0;
-                for (int i = mouvement.depart.x - 1; i <= mouvement.depart.x + 1; i++)
-                    if (i >= 0 && i <= 7)
-                        compteur = board[i][7] + board[i][6];
-                if (compteur <= 8)
-                    value += DANGER_NO_LAST_DEF;
-
-            }
+            /*
+             * if (board[mouvement.arrive.x][mouvement.arrive.y] == ROUGE &&
+             * mouvement.depart.y < 6) { // regarder ligne 8 et 7 si il y a des alliés sur
+             * un range de 3 x int compteur = 0; for (int i = mouvement.depart.x - 1; i <=
+             * mouvement.depart.x + 1; i++) if (i >= 0 && i <= 7) compteur = board[i][7] +
+             * board[i][6]; if (compteur <= 8) value += DANGER_NO_LAST_DEF;
+             * 
+             * }
+             */
             if (depth == 0) {
 
                 // pion noir de B7 à C6
