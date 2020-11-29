@@ -23,23 +23,24 @@ public class GenerateurMoveNoir extends GenerateurMove {
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         
+        if (estRouge(board[i][j])) {
+          nbPionRouge++;
+        }
+
         if (estNoir(board[i][j])) {
-          nbPion++;
+          nbPionNoir++;
           // deplacement à gauche
           if (estDeplacableGauche(i, j)) {
-            System.out.println("gauche: " + "xd: " + i + " yd: "+j+" xa: "+(i+1)+ " ya: "+(j-1));
             Move enDroiteHaut = new Move(i, j, i + 1, j - 1);
             listemoves.add(enDroiteHaut);
           }
           // deplacement au centre
           if (estDeplacableDevant(i, j)) {
-            System.out.println("centre: " + "xd: " + i + " yd: "+j+" xa: "+(i)+ " ya: "+(j-1));
             Move enDroiteCentre = new Move(i, j, i, j-1);
             listemoves.add(enDroiteCentre);
           }
           
           if (estDeplacableDroite(i, j)) {
-            System.out.println("droite: " + "xd: " + i + " yd: "+j+" xa: "+(i-1)+ " ya: "+(j-1));
             Move enDroiteBas = new Move(i, j, i - 1, j - 1);
             listemoves.add(enDroiteBas);
           }
@@ -73,4 +74,5 @@ public class GenerateurMoveNoir extends GenerateurMove {
       return false;
     return estVide(board[i][j-1]);
   }
+
 }

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Arrays;
 
 public class MinMax {
-    static final int MAX = Integer.MAX_VALUE;
-    static final int MIN = Integer.MIN_VALUE;
+    static final int MAX = 100000000;
+    static final int MIN = -100000000;
     static final int END = 6666666;
 
     int turn;
@@ -50,7 +50,7 @@ public class MinMax {
             nboard = copy(this.board);
             // Pour chaque mouvements possibles, on va analyser son score
 
-            int score = getValueOfBoard(board, m, 0, gen.getNbPion());
+            int score = getValueOfBoard(board, m, 0, gen.getNbPionNoir(), gen.getNbPionRouge());
             // effectue le mouvement
             applyMove(nboard, m);
 
@@ -87,7 +87,7 @@ public class MinMax {
             // pour chaque mouvements possible
             for (Move move : myMoves) {
                 nboard = copy(board);
-                int score = getValueOfBoard(board, move, depth, tempGen.getNbPion());
+                int score = getValueOfBoard(board, move, depth, tempGen.getNbPionNoir(), tempGen.getNbPionRouge());
 
                 // on effectue le déplacement dans le board
                 applyMove(nboard, move);
@@ -115,7 +115,6 @@ public class MinMax {
             for (Move move : myMoves) {
                 nboard = copy(board);
                 int score = 0;
-
                 applyMove(nboard, move);
 
                 score += miniMax(nboard, depth + 1, true, alpha, beta);
@@ -182,6 +181,7 @@ public class MinMax {
     static final int VALUE_DEFENCE = 50;
     static final int VALUE_ATTACK = 200;
     static final int VALUE_SIZE = 1000;
+    static final int VALUE_CASTLE = 100000;
     static final int DANGER_3_LAST_COL = 100000;
     static final int DANGER_NO_LAST_DEF = 100000;
     static final int WIN_VALUE = 9999999;
@@ -192,21 +192,23 @@ public class MinMax {
      * @param board
      * @param mouvement
      * @param depth
-     * @param nbPion
+     * @param nbPionNoir
      * @return le score associé au board évalué
      */
-    public int getValueOfBoard(int[][] board, Move mouvement, int depth, int nbPion) {
+    public int getValueOfBoard(int[][] board, Move mouvement, int depth, int nbPionNoir, int nbPionRouge) {
         int value = 0;
 
         // si notre AI joue les noirs
         if (toMax == NOIR) {
 
             // score survie des pions noirs
-            value += VALUE_SIZE * nbPion;
+            value = value + (VALUE_SIZE * nbPionNoir);
+            value = value - (VALUE_SIZE * nbPionRouge);
 
             // regarde si le pion noir tue un rouge
             if (board[mouvement.arrive.x][mouvement.arrive.y] == ROUGE) {
-
+                value += VALUE_SIZE;
+                value += VALUE_ATTACK;
                 // regard backup gauche
                 if (mouvement.depart.x <= 6 && mouvement.depart.y <= 6
                         && board[mouvement.depart.x + 1][mouvement.depart.y - 1] == NOIR) {
@@ -262,34 +264,34 @@ public class MinMax {
             }
 
             // stratégie du castle
-            if (depth == 0) {
+            if (depth == 0 && turn < 7) {
 
                 // pion noir de B7 à C6
                 if (turn == 1 && mouvement.depart.equals(1, 6) && mouvement.arrive.equals(2, 5)) {
-                    value += 1000;
+                    value += VALUE_CASTLE;
                 }
                 // pion noir de G7 à F6
                 if (turn == 2 && mouvement.depart.equals(6, 6) && mouvement.arrive.equals(5, 5)) {
-                    value += 1000;
+                    value += VALUE_CASTLE;
                 }
 
                 // pion noir de A8 à B7
                 if (turn == 3 && mouvement.depart.equals(0, 7) && mouvement.arrive.equals(1, 6)) {
-                    value += 1000;
+                    value += VALUE_CASTLE;
                 }
                 // pion noir de H8 à G7
                 if (turn == 4 && mouvement.depart.equals(7, 7) && mouvement.arrive.equals(6, 6)) {
-                    value += 1000;
+                    value += VALUE_CASTLE;
                 }
 
                 // pion noir de A7 à B6
                 if (turn == 5 && mouvement.depart.equals(0, 6) && mouvement.arrive.equals(1, 5)) {
-                    value += 1000;
+                    value += VALUE_CASTLE;
                 }
 
                 // pion noir de H7 à G6
                 if (turn == 6 && mouvement.depart.equals(7, 6) && mouvement.arrive.equals(6, 5)) {
-                    value += 1000;
+                    value += VALUE_CASTLE;
                 }
             }
         }

@@ -25,8 +25,11 @@ public class GenerateurMoveRouge extends GenerateurMove {
       for (int j = 0; j < 8; j++) {
         // System.out.print(board[i][j]+" ");
 
+        if (estNoir(board[i][j])) {
+          nbPionRouge++;
+        }
         if (estRouge(board[i][j])) {
-          nbPion++;
+          nbPionRouge++;
           // deplacement à gauche
 
           if (estDeplacableGauche(i, j)) {
@@ -77,4 +80,5 @@ public class GenerateurMoveRouge extends GenerateurMove {
 
     return estVide(board[i][j + 1]);
   }
+
 }

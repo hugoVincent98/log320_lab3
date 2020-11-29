@@ -9,7 +9,8 @@ public abstract class GenerateurMove {
     int endRow;
     int endCol;
 
-    protected int nbPion;
+    protected int nbPionRouge;
+    protected int nbPionNoir;
 
     static final int ROUGE = 2;
     static final int NOIR = 4;
@@ -27,10 +28,13 @@ public abstract class GenerateurMove {
         return NOIR == couleur;
     }
 
-    protected int getNbPion() {
-        return nbPion;
+    public int getNbPionRouge() {
+        return nbPionRouge;
     }
 
+    public int getNbPionNoir() {
+        return nbPionNoir;
+    }
     protected boolean estRouge(int couleur) {
         return ROUGE == couleur;
     }
