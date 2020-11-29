@@ -219,14 +219,14 @@ public class MinMax {
             // regard si move est suicide a gauche
             if (mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1
                     && board[mouvement.arrive.x + 1][mouvement.arrive.y + -1] == ROUGE) {
-                value -= 100;
+                value -= 40;
 
             }
 
             // regard si move est suicide a droite
             if (mouvement.arrive.x >= 1 && mouvement.arrive.y >= 1
                     && board[mouvement.arrive.x - 1][mouvement.arrive.y - 1] == ROUGE) {
-                value -= 100;
+                value -= 40;
             }
 
             // regard si il va avoir du backup apres son move a gauche

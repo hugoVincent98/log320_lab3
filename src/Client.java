@@ -157,7 +157,7 @@ class Client {
 					output.flush();
 
 				}
-				// Le dernier coup est invalide
+				// Le dernier coup est invalide	
 				if (cmd == '4') {
 					System.out.println("Coup invalide, entrez un nouveau coup : ");
 					String move = null;
