@@ -1,13 +1,12 @@
 package MinMax;
 
 import java.util.List;
-import java.io.Console;
 import java.util.Arrays;
 
 public class MinMax {
-    static int MAX = 100000000;
-    static int MIN = -100000000;
-    static int END = 6666666;
+    static final int MAX = Integer.MAX_VALUE;
+    static final int MIN = Integer.MIN_VALUE;
+    static final int END = 6666666;
 
     int turn;
     int toMax;
@@ -46,8 +45,7 @@ public class MinMax {
         int meilleurScore = MIN;
         List<Move> myMoves = gen.obtenirListeMoves();
         Move meilleurMove = null;
-        int[][] nboard = new int[8][8];
-
+        int[][] nboard;
         for (Move m : myMoves) {
             nboard = copy(this.board);
             // Pour chaque mouvements possibles, on va analyser son score
@@ -67,12 +65,10 @@ public class MinMax {
             }
             System.out.println("meilleur score: " + score);
         }
-
-        board = nboard;
         return meilleurMove;
     }
 
-    private final int MAXDEPTH = 4;
+    static final int MAXDEPTH = 4;
 
     public int miniMax(int[][] board, int depth, boolean isMax, int alpha, int beta) {
 
@@ -122,7 +118,7 @@ public class MinMax {
 
                 applyMove(nboard, move);
 
-                score = score + miniMax(nboard, depth + 1, true, alpha, beta);
+                score += miniMax(nboard, depth + 1, true, alpha, beta);
 
                 if (score < beta) {
                     beta = score;
