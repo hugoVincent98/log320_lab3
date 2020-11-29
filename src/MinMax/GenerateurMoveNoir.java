@@ -24,7 +24,7 @@ public class GenerateurMoveNoir extends GenerateurMove {
       for (int j = 0; j < 8; j++) {
         
         if (estNoir(board[i][j])) {
-
+          nbPion++;
           // deplacement à gauche
           if (estDeplacableGauche(i, j)) {
             System.out.println("gauche: " + "xd: " + i + " yd: "+j+" xa: "+(i+1)+ " ya: "+(j-1));
@@ -69,7 +69,7 @@ public class GenerateurMoveNoir extends GenerateurMove {
   }
 
   boolean estDeplacableDevant(int i, int j) {
-    if (i == 0)
+    if (j == 0)
       return false;
     return estVide(board[i][j-1]);
   }

@@ -5,8 +5,8 @@ import java.io.Console;
 import java.util.Arrays;
 
 public class MinMax {
-    static int MAX = 100000;
-    static int MIN = -100000;
+    static int MAX = 100000000;
+    static int MIN = -100000000;
     static int END = 6666666;
 
     int turn;
@@ -54,7 +54,7 @@ public class MinMax {
         for (Move m : myMoves) {
             // Pour chaque mouvements possibles, on va analyser son score
             nboard = copy(this.board);
-            int score = getValueOfBoard(board, m, 0);
+            int score = getValueOfBoard(board, m, 0, gen.getNbPion());
             int value = nboard[(int) m.depart.getX()][(int) m.depart.getY()];
             nboard[(int) m.arrive.getX()][(int) m.arrive.getY()] = value;
             nboard[(int) m.depart.getX()][(int) m.depart.getY()] = 0;
@@ -98,7 +98,7 @@ public class MinMax {
             // pour chaque mouvements possible
             for (int i = 0; i < myMoves.size(); i++) {
                 nboard = copy(board);
-                int score = getValueOfBoard(board, myMoves.get(i), depth);
+                int score = getValueOfBoard(board, myMoves.get(i), depth, tempGen.getNbPion());
                 // on effectue le déplacement dans le board
                 int value = nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()];
                 nboard[(int) myMoves.get(i).arrive.getX()][(int) myMoves.get(i).arrive.getY()] = value;
@@ -182,38 +182,44 @@ public class MinMax {
 
     static final int ROUGE = 2;
     static final int NOIR = 4;
-
+    static final int VALUE_DEFENCE = 50;
+	static final int VALUE_ATTACK = 200;
+    static final int VALUE_SIZE = 1000;
+    static final int DANGER_3_LAST_COL = 100000;
     // test (on joue les noirs)
-    public int getValueOfBoard(int[][] board, Move mouvement, int depth) {
+    public int getValueOfBoard(int[][] board, Move mouvement, int depth, int nbPion) {
         int value = 0;
 
         if (toMax == 4) {
+
+            // score survie des pions noirs
+            value += VALUE_SIZE * nbPion;
 
             // regarde si le pion noir tue un rouge
             if (board[mouvement.arrive.x][mouvement.arrive.y] == ROUGE) {
                 
                 // regard backup gauche
                 if ( mouvement.depart.x <= 6 && mouvement.depart.y <= 6 && board[mouvement.depart.x+1][mouvement.depart.y - 1] == NOIR) {
-                    value = value + 50;
+                    value += VALUE_DEFENCE;
                 }
 
                 // regard backup droite
                 if (mouvement.depart.x >= 1 && mouvement.depart.y <= 6 && board[mouvement.depart.x - 1][mouvement.depart.y - 1] == NOIR) {   
-                    value = value + 50;
+                    value += VALUE_DEFENCE;
                 }
 
             }
 
             //regard si il va avoir du backup apres son move a gauche
             
-            if(mouvement.arrive.x <= 6 && mouvement.arrive.y <= 6 && board[mouvement.arrive.x + 1][mouvement.arrive.y - 1] == NOIR){
-                value = value + 50; 
+            if(mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1 && board[mouvement.arrive.x + 1][mouvement.arrive.y - 1] == NOIR){
+                value +=VALUE_DEFENCE; 
             }
             
             //regard si il va avoirt du backup apres son move a droite
 
-            if(mouvement.arrive.x >= 1 && mouvement.arrive.y <= 6 && board[mouvement.arrive.x - 1][mouvement.arrive.y - 1] == NOIR){
-                value = value + 50;
+            if(mouvement.arrive.x >= 1 && mouvement.arrive.y >= 1 && board[mouvement.arrive.x - 1][mouvement.arrive.y - 1] == NOIR){
+                value += VALUE_DEFENCE;
             }
 
 
@@ -221,7 +227,7 @@ public class MinMax {
 
             // danger value les rouges dans les 3 dernières col
             if (board[mouvement.arrive.x][mouvement.arrive.y] == ROUGE && mouvement.arrive.y > 4) {
-                value = value + 10000;
+                value = value + DANGER_3_LAST_COL;
             }
 
             if (depth == 0) {

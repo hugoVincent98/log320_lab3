@@ -3,9 +3,13 @@ package MinMax;
 import java.util.List;
 
 public abstract class GenerateurMove {
-    int startRow, startCol;
+    int startRow;
+    int startCol;
 
-    int endRow, endCol;
+    int endRow;
+    int endCol;
+
+    protected int nbPion;
 
     static final int ROUGE = 2;
     static final int NOIR = 4;
@@ -23,6 +27,10 @@ public abstract class GenerateurMove {
         return NOIR == couleur;
     }
 
+    protected int getNbPion() {
+        return nbPion;
+    }
+
     protected boolean estRouge(int couleur) {
         return ROUGE == couleur;
     }
@@ -30,8 +38,8 @@ public abstract class GenerateurMove {
     protected boolean estVide(int emplacement) {
         return emplacement == 0;
     }
-    abstract GenerateurMove newInstance(int[][] board);
 
+    abstract GenerateurMove newInstance(int[][] board);
 
     abstract boolean estDeplacableGauche(int xdepart, int ydepart);
 
