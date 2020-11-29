@@ -1,4 +1,5 @@
 package MinMax;
+
 import java.awt.*;
 
 public class Move {
@@ -36,20 +37,25 @@ public class Move {
     this.arrive = arrive;
   }
 
+  /**
+   * Méthode qui retourne le mouvement en format demandé par le programme de jeu
+   * 
+   * @return
+   */
   @Override
   public String toString() {
-    
-    char lettredepart = (char)(this.depart.x + 65);
-    char numerodepart = (char)(this.depart.y+49);
 
-    char lettrearrive = (char)(this.arrive.x + 65);
-    char numeroarrive = (char)(this.arrive.y + 49);
-    return lettredepart+""+numerodepart+"-"+lettrearrive+""+numeroarrive;
+    char lettredepart = (char) (this.depart.x + 65);
+    char numerodepart = (char) (this.depart.y + 49);
+
+    char lettrearrive = (char) (this.arrive.x + 65);
+    char numeroarrive = (char) (this.arrive.y + 49);
+    return lettredepart + "" + numerodepart + "-" + lettrearrive + "" + numeroarrive;
   }
 
-
   public String toCoordinate() {
-    return "Depart  : [x=" + this.depart.x + ",y=" + this.depart.y+"]   Arrivé : [x=" + this.arrive.x + ",y=" + this.arrive.y+"]";
+    return "Depart  : [x=" + this.depart.x + ",y=" + this.depart.y + "]   Arrivé : [x=" + this.arrive.x + ",y="
+        + this.arrive.y + "]";
   }
 
 }

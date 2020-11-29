@@ -134,11 +134,10 @@ class Client {
 					printboard(board);
 
 					System.out.println("Entrez votre coup : ");
-					String move = null;
 
 					counterTurn++;
 					
-					MinMax minmax = new MinMax(4,player,board,counterTurn);
+					MinMax minmax = new MinMax(NOIR,player,board,counterTurn);
 					Move bestMove = minmax.getBestMove();
 					
 					System.out.println("le move : " + bestMove.toString());
@@ -151,7 +150,7 @@ class Client {
 					printboard(board);
 					
 					
-					move = bestMove.toString();
+					String move = bestMove.toString();
 					//move = console.readLine();
 					output.write(move.getBytes(), 0, move.length());
 					output.flush();

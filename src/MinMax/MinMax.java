@@ -22,29 +22,26 @@ public class MinMax {
         this.board = board;
         this.toMax = toMax;
         this.toMin = toMin;
-
-        if (toMax == 2) {
-            gen = new GenerateurMoveRouge(this.board);
-            counterGen = new GenerateurMoveNoir(this.board);
-        }
-        if (toMax == 4) {
-            gen = new GenerateurMoveNoir(this.board);
-            counterGen = new GenerateurMoveRouge(this.board);
-        }
+        updateBoard(board);
     }
 
     public void updateBoard(int[][] board) {
         this.board = board;
-        if (toMax == 2) {
+        if (toMax == ROUGE) {
             gen = new GenerateurMoveRouge(this.board);
             counterGen = new GenerateurMoveNoir(this.board);
         }
-        if (toMax == 4) {
+        if (toMax == NOIR) {
             gen = new GenerateurMoveNoir(board);
             counterGen = new GenerateurMoveRouge(this.board);
         }
     }
 
+    /**
+     * Retourne le prochain mouvement jugé le meilleur
+     * 
+     * @return
+     */
     public Move getBestMove() {
         int meilleurScore = MIN;
         List<Move> myMoves = gen.obtenirListeMoves();
@@ -52,12 +49,12 @@ public class MinMax {
         int[][] nboard = new int[8][8];
 
         for (Move m : myMoves) {
-            // Pour chaque mouvements possibles, on va analyser son score
             nboard = copy(this.board);
+            // Pour chaque mouvements possibles, on va analyser son score
+
             int score = getValueOfBoard(board, m, 0, gen.getNbPion());
-            int value = nboard[(int) m.depart.getX()][(int) m.depart.getY()];
-            nboard[(int) m.arrive.getX()][(int) m.arrive.getY()] = value;
-            nboard[(int) m.depart.getX()][(int) m.depart.getY()] = 0;
+            // effectue le mouvement
+            applyMove(nboard, m);
 
             System.out.println(" myMoves " + m.toCoordinate());
 
@@ -79,9 +76,6 @@ public class MinMax {
 
     public int miniMax(int[][] board, int depth, boolean isMax, int alpha, int beta) {
 
-        if (checkWinner(board) != 0) {
-            return END;
-        }
         if (depth > MAXDEPTH) {
             return 0;
         }
@@ -93,16 +87,14 @@ public class MinMax {
             // pour récupérer la liste des moves possible sur ce dernier
             GenerateurMove tempGen = gen.newInstance(board);
             List<Move> myMoves = tempGen.obtenirListeMoves();
-            Move meilleurMove = null;
             int[][] nboard;
             // pour chaque mouvements possible
-            for (int i = 0; i < myMoves.size(); i++) {
+            for (Move move : myMoves) {
                 nboard = copy(board);
-                int score = getValueOfBoard(board, myMoves.get(i), depth, tempGen.getNbPion());
+                int score = getValueOfBoard(board, move, depth, tempGen.getNbPion());
+
                 // on effectue le déplacement dans le board
-                int value = nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()];
-                nboard[(int) myMoves.get(i).arrive.getX()][(int) myMoves.get(i).arrive.getY()] = value;
-                nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()] = 0;
+                applyMove(nboard, move);
 
                 score += miniMax(nboard, depth + 1, false, alpha, beta);
 
@@ -110,7 +102,6 @@ public class MinMax {
                 // on le garde en mémoire
                 if (score > alpha) {
                     alpha = score;
-                    meilleurMove = myMoves.get(i);
                 }
 
                 if (alpha >= beta) {
@@ -123,21 +114,18 @@ public class MinMax {
             int meilleurScore = MAX;
             GenerateurMove tempCounterGen = counterGen.newInstance(board);
             List<Move> myMoves = tempCounterGen.obtenirListeMoves();
-            Move meilleurMove = null;
             int[][] nboard;
 
-            for (int i = 0; i < myMoves.size(); i++) {
+            for (Move move : myMoves) {
                 nboard = copy(board);
                 int score = 0;
-                int value = nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()];
-                nboard[(int) myMoves.get(i).arrive.getX()][(int) myMoves.get(i).arrive.getY()] = value;
-                nboard[(int) myMoves.get(i).depart.getX()][(int) myMoves.get(i).depart.getY()] = 0;
+
+                applyMove(nboard, move);
 
                 score = score + miniMax(nboard, depth + 1, true, alpha, beta);
 
                 if (score < beta) {
                     beta = score;
-                    meilleurMove = myMoves.get(i);
                 }
                 if (alpha >= beta) {
                     break;
@@ -147,31 +135,44 @@ public class MinMax {
         }
     }
 
-    public int checkWinner(int[][] board) {
-        if (toMax == 2) {
-            for (int j = 0; j < 8; j++) {
-                if (board[0][j] == 4) {
-                    return -1;
-                }
-                if (board[7][j] == 2) {
-                    return 1;
-                }
-            }
-        }
+    /**
+     * Applique le mouvement d'un object move dans le board
+     * 
+     * @param board
+     * @param move
+     */
+    private void applyMove(int[][] board, Move move) {
+        int value = board[move.depart.x][move.depart.y];
+        board[move.arrive.x][move.arrive.y] = value;
+        board[move.depart.x][move.depart.y] = 0;
+    }
 
-        if (toMax == 4) {
-            for (int j = 0; j < 8; j++) {
-                if (board[7][j] == 2) {
-                    return -1;
-                }
-                if (board[0][j] == 4) {
-                    return 1;
-                }
+    /**
+     * détermine dans un board qui a atteint la ligne d'arrivé
+     * 
+     * @param board
+     * @return la couleur de l'équipe qui a win
+     */
+    public int checkWinner(int[][] board) {
+
+        for (int i = 0; i < 8; i++) {
+            if (board[i][0] == NOIR) {
+                return NOIR;
+            }
+            if (board[i][7] == ROUGE) {
+                return ROUGE;
             }
         }
         return 0;
     }
 
+    /**
+     * copy un board afin de ne pas garder la référence pour le modifier dans chaque
+     * move
+     * 
+     * @param src
+     * @return une copy du board
+     */
     public static int[][] copy(int[][] src) {
         int[][] dst = new int[src.length][];
         for (int i = 0; i < src.length; i++) {
@@ -189,11 +190,20 @@ public class MinMax {
     static final int DANGER_NO_LAST_DEF = 100000;
     static final int WIN_VALUE = 9999999;
 
-    // test (on joue les noirs)
+    /**
+     * regarde l'état du board et lui associe un score
+     * 
+     * @param board
+     * @param mouvement
+     * @param depth
+     * @param nbPion
+     * @return le score associé au board évalué
+     */
     public int getValueOfBoard(int[][] board, Move mouvement, int depth, int nbPion) {
         int value = 0;
 
-        if (toMax == 4) {
+        // si notre AI joue les noirs
+        if (toMax == NOIR) {
 
             // score survie des pions noirs
             value += VALUE_SIZE * nbPion;
@@ -247,41 +257,43 @@ public class MinMax {
                 value = value + DANGER_3_LAST_COL;
 
             }
-           
-            // si le pion est a 1, 2 ou 3 moves de win
+
+            // si le pion est a 1 ou 2 moves de win
             if ((depth == 0 || depth == 2) && mouvement.arrive.y == 0) {
 
                 value += WIN_VALUE;
 
             }
+
+            // stratégie du castle
             if (depth == 0) {
 
                 // pion noir de B7 à C6
                 if (turn == 1 && mouvement.depart.equals(1, 6) && mouvement.arrive.equals(2, 5)) {
-                    value = value + 1000;
+                    value += 1000;
                 }
                 // pion noir de G7 à F6
                 if (turn == 2 && mouvement.depart.equals(6, 6) && mouvement.arrive.equals(5, 5)) {
-                    value = value + 1000;
+                    value += 1000;
                 }
 
                 // pion noir de A8 à B7
                 if (turn == 3 && mouvement.depart.equals(0, 7) && mouvement.arrive.equals(1, 6)) {
-                    value = value + 1000;
+                    value += 1000;
                 }
                 // pion noir de H8 à G7
                 if (turn == 4 && mouvement.depart.equals(7, 7) && mouvement.arrive.equals(6, 6)) {
-                    value = value + 1000;
+                    value += 1000;
                 }
 
                 // pion noir de A7 à B6
                 if (turn == 5 && mouvement.depart.equals(0, 6) && mouvement.arrive.equals(1, 5)) {
-                    value = value + 1000;
+                    value += 1000;
                 }
 
                 // pion noir de H7 à G6
                 if (turn == 6 && mouvement.depart.equals(7, 6) && mouvement.arrive.equals(6, 5)) {
-                    value = value + 1000;
+                    value += 1000;
                 }
             }
         }
