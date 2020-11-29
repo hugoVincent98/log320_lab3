@@ -187,6 +187,7 @@ public class MinMax {
     static final int VALUE_SIZE = 1000;
     static final int DANGER_3_LAST_COL = 100000;
     static final int DANGER_NO_LAST_DEF = 100000;
+    static final int WIN_VALUE = 9999999;
 
     // test (on joue les noirs)
     public int getValueOfBoard(int[][] board, Move mouvement, int depth, int nbPion) {
@@ -246,15 +247,13 @@ public class MinMax {
                 value = value + DANGER_3_LAST_COL;
 
             }
-            /*
-             * if (board[mouvement.arrive.x][mouvement.arrive.y] == ROUGE &&
-             * mouvement.depart.y < 6) { // regarder ligne 8 et 7 si il y a des alliés sur
-             * un range de 3 x int compteur = 0; for (int i = mouvement.depart.x - 1; i <=
-             * mouvement.depart.x + 1; i++) if (i >= 0 && i <= 7) compteur = board[i][7] +
-             * board[i][6]; if (compteur <= 8) value += DANGER_NO_LAST_DEF;
-             * 
-             * }
-             */
+           
+            // si le pion est a 1, 2 ou 3 moves de win
+            if ((depth == 0 || depth == 2) && mouvement.arrive.y == 0) {
+
+                value += WIN_VALUE;
+
+            }
             if (depth == 0) {
 
                 // pion noir de B7 à C6
