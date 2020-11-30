@@ -226,7 +226,7 @@ public class MinMax {
 
             // regard si move est suicide a gauche
             if (mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1
-                    && board[mouvement.arrive.x + 1][mouvement.arrive.y + -1] == ROUGE) {
+                    && board[mouvement.arrive.x + 1][mouvement.arrive.y - 1] == ROUGE) {
                 value -= 40;
 
             }
@@ -257,7 +257,7 @@ public class MinMax {
             }
 
             // si le pion est a 1 ou 2 moves de win
-            if ((depth == 0 || depth == 2) && mouvement.arrive.y == 0) {
+            if ((depth == 0 || depth == 2 || depth == 4) && mouvement.arrive.y == 0) {
 
                 value += WIN_VALUE;
 
@@ -296,10 +296,102 @@ public class MinMax {
             }
         }
 
-        /*
-         * if(toMax = 2){
-         */
-        // }
+        
+        if(toMax == ROUGE){
+            // score survie des pions noirs
+            value = value + (VALUE_SIZE * nbPionRouge);
+            value = value - (VALUE_SIZE * nbPionNoir);
+
+            // regarde si le pion noir tue un rouge
+            if (board[mouvement.arrive.x][mouvement.arrive.y] == NOIR) {
+                value += VALUE_SIZE;
+                value += VALUE_ATTACK;
+                // regard backup gauche
+                if (mouvement.depart.x >= 1 && mouvement.depart.y <= 6
+                        && board[mouvement.depart.x - 1][mouvement.depart.y + 1] == ROUGE) {
+                    value += VALUE_DEFENCE;
+                }
+
+                // regard backup droite
+                if (mouvement.depart.x <= 6 && mouvement.depart.y <= 6
+                        && board[mouvement.depart.x + 1][mouvement.depart.y + 1] == ROUGE) {
+                    value += VALUE_DEFENCE;
+                }
+
+                value += 10;
+            }
+
+            // regard si move est suicide a gauche
+            if (mouvement.arrive.x <= 6 && mouvement.arrive.y <= 6
+                    && board[mouvement.arrive.x + 1][mouvement.arrive.y +1] == NOIR) {
+                value -= 100;
+
+            }
+
+            // regard si move est suicide a droite
+            if (mouvement.arrive.x >= 1 && mouvement.arrive.y <= 6
+                    && board[mouvement.arrive.x - 1][mouvement.arrive.y + 1] == NOIR) {
+                value -= 100;
+            }
+
+            // regard si il va avoir du backup apres son move a droite
+
+            if (mouvement.depart.y != 0 && mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1
+                    && board[mouvement.arrive.x + 1][mouvement.arrive.y - 1] == ROUGE) {
+                value += VALUE_DEFENCE;
+            }
+
+            // regard si il va avoir du backup apres son move a gauche
+            if (mouvement.depart.y != 0 && mouvement.arrive.x >= 1 && mouvement.arrive.y >= 1
+                    && board[mouvement.arrive.x - 1][mouvement.arrive.y - 1] == ROUGE) {
+                value += VALUE_DEFENCE;
+            }
+            // danger value les noirs dans les 3 dernières col
+            if (depth == 0 && board[mouvement.arrive.x][mouvement.arrive.y] == NOIR && mouvement.arrive.y < 2) {
+                value = value + DANGER_3_LAST_COL;
+
+            }
+
+            // si le pion est a 5 ou 6 moves de win
+            if ((depth == 0 || depth == 2 || depth == 4) && mouvement.arrive.y == 7   ) {
+
+                value += WIN_VALUE;
+
+            }
+
+            // stratégie du castle
+            if (depth == 0 && turn < 7) {
+                
+                // pion noir de B2 à C3
+                if (turn == 1 && mouvement.depart.equals(1, 1) && mouvement.arrive.equals(2, 2)) {
+                    value += VALUE_CASTLE;
+                }
+                // pion noir de G2 à F3
+                if (turn == 2 && mouvement.depart.equals(6, 1) && mouvement.arrive.equals(5, 2)) {
+                    value += VALUE_CASTLE;
+                }
+
+                // pion noir de A1 à B2
+                if (turn == 3 && mouvement.depart.equals(0, 0) && mouvement.arrive.equals(1, 1)) {
+                    value += VALUE_CASTLE;
+                }
+                // pion noir de H1 à G2
+                if (turn == 4 && mouvement.depart.equals(7, 0) && mouvement.arrive.equals(6, 1)) {
+                    value += VALUE_CASTLE;
+                }
+
+                // pion noir de A2 à B3
+                if (turn == 5 && mouvement.depart.equals(0, 1) && mouvement.arrive.equals(1, 2)) {
+                    value += VALUE_CASTLE;
+                }
+
+                // pion noir de H2 à G3
+                if (turn == 6 && mouvement.depart.equals(7, 1) && mouvement.arrive.equals(6, 2)) {
+                    value += VALUE_CASTLE;
+                }
+            }
+
+        }
         return value;
     }
 
