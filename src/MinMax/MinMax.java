@@ -96,15 +96,14 @@ public class MinMax {
 
                 // si ce mouvement a un meilleur score que le meilleur score actuelle
                 // on le garde en mémoire
-                if (score > alpha) {
-                    alpha = score;
-                }
+                meilleurScore = Math.max(score, meilleurScore);
+                alpha = Math.max(alpha, score);
 
                 if (alpha >= beta) {
                     break;
                 }
             }
-            return meilleurScore;
+            return alpha;
             // toMinimize
         } else {
             int meilleurScore = MAX;
@@ -119,9 +118,8 @@ public class MinMax {
 
                 score += miniMax(nboard, depth + 1, true, alpha, beta);
 
-                if (score < beta) {
-                    beta = score;
-                }
+                meilleurScore = Math.min(score, meilleurScore);
+                beta = Math.min(beta, score);
                 if (alpha >= beta) {
                     break;
                 }
@@ -259,7 +257,8 @@ public class MinMax {
             // si le pion est a 1 ou 2 moves de win
             if ((depth == 0 || depth == 2 || depth == 4) && mouvement.arrive.y == 0) {
 
-                value += WIN_VALUE;
+                value += WIN_VALUE / (depth == 0 ? 1 : depth);
+                System.out.println("Pion au niv " + depth + " : " + mouvement.toCoordinate() + " value : " + value);
 
             }
 
@@ -296,8 +295,7 @@ public class MinMax {
             }
         }
 
-        
-        if(toMax == ROUGE){
+        if (toMax == ROUGE) {
             // score survie des pions noirs
             value = value + (VALUE_SIZE * nbPionRouge);
             value = value - (VALUE_SIZE * nbPionNoir);
@@ -323,7 +321,7 @@ public class MinMax {
 
             // regard si move est suicide a gauche
             if (mouvement.arrive.x <= 6 && mouvement.arrive.y <= 6
-                    && board[mouvement.arrive.x + 1][mouvement.arrive.y +1] == NOIR) {
+                    && board[mouvement.arrive.x + 1][mouvement.arrive.y + 1] == NOIR) {
                 value -= 100;
 
             }
@@ -353,15 +351,16 @@ public class MinMax {
             }
 
             // si le pion est a 5 ou 6 moves de win
-            if ((depth == 0 || depth == 2 || depth == 4) && mouvement.arrive.y == 7   ) {
+            if ((depth == 0 || depth == 2 || depth == 4) && mouvement.arrive.y == 7) {
 
-                value += WIN_VALUE;
+                value += WIN_VALUE / (depth == 0 ? 1 : depth);
+                System.out.println("Pion au niv " + depth + " : " + mouvement.toCoordinate());
 
             }
 
             // stratégie du castle
             if (depth == 0 && turn < 7) {
-                
+
                 // pion noir de B2 à C3
                 if (turn == 1 && mouvement.depart.equals(1, 1) && mouvement.arrive.equals(2, 2)) {
                     value += VALUE_CASTLE;

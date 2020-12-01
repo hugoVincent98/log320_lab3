@@ -57,7 +57,7 @@ class Client {
 					System.out.println("Nouvelle partie! Vous jouer rouge, entrez votre premier coup : ");
 					String move = null;
 					
-					printboard(board);
+					//printboard(board);
 					
 					counterTurn++;
 
@@ -71,7 +71,7 @@ class Client {
 					board[bestMove.getDepart().x][bestMove.getDepart().y] = 0;
 					board[bestMove.getArrive().x][bestMove.getArrive().y] = value;
 					
-					printboard(board);
+					//printboard(board);
 
 					move = bestMove.toString();
 					output.write(move.getBytes(), 0, move.length());
@@ -100,7 +100,7 @@ class Client {
 						}
 					}
 
-					printboard(board);
+					//printboard(board);
 				}
 
 				// Le serveur demande le prochain coup
@@ -131,7 +131,7 @@ class Client {
 					board[xOld][yOld] = 0;
 					board[xNew][yNew] = value;
 
-					printboard(board);
+					//printboard(board);
 
 					System.out.println("Entrez votre coup : ");
 
@@ -147,7 +147,7 @@ class Client {
 					board[bestMove.getDepart().x][bestMove.getDepart().y] = 0;
 					board[bestMove.getArrive().x][bestMove.getArrive().y] = value;
 					
-					printboard(board);
+					//printboard(board);
 					
 					
 					String move = bestMove.toString();
