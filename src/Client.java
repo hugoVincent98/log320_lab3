@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.time.Duration;
+import java.time.Instant;
 
 
 class Client {
@@ -28,6 +30,7 @@ class Client {
 			output = new BufferedOutputStream(myClient.getOutputStream());
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 			while (1 == 1) {
+				startTimer();
 				char cmd = 0;
 
 				cmd = (char) input.read();
@@ -187,6 +190,17 @@ class Client {
 		
 
 	}
+
+	private static Instant timer;
+	static void startTimer() {
+		timer = Instant.now();
+	}
+
+	static boolean isFourSecondPassed() {
+		return Duration.between(timer, Instant.now()).getSeconds() >= 4;
+	}
+
+	
 
 	static void printboard(int[][] b) {
 		for(int i = 0 ; i < 8; i++){
