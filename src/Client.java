@@ -30,7 +30,7 @@ class Client {
 			output = new BufferedOutputStream(myClient.getOutputStream());
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 			while (1 == 1) {
-				startTimer();
+				MinMax.startTimer();
 				char cmd = 0;
 
 				cmd = (char) input.read();
@@ -109,8 +109,8 @@ class Client {
 				// Le serveur demande le prochain coup
 				// Le message contient aussi le dernier coup joue.
 				if (cmd == '3') {
+					MinMax.startTimer();
 					byte[] aBuffer = new byte[16];
-
 					int size = input.available();
 					System.out.println("size :" + size);
 					input.read(aBuffer, 0, size);
@@ -191,16 +191,6 @@ class Client {
 
 	}
 
-	private static Instant timer;
-	static void startTimer() {
-		timer = Instant.now();
-	}
-
-	static boolean isFourSecondPassed() {
-		return Duration.between(timer, Instant.now()).getSeconds() >= 4;
-	}
-
-	
 
 	static void printboard(int[][] b) {
 		for(int i = 0 ; i < 8; i++){

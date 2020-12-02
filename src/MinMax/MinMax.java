@@ -1,6 +1,8 @@
 package MinMax;
 
 import java.util.List;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 
 public class MinMax {
@@ -72,7 +74,7 @@ public class MinMax {
 
     public int miniMax(int[][] board, int depth, boolean isMax, int alpha, int beta) {
 
-        if (depth > MAXDEPTH) {
+        if (depth > MAXDEPTH || hasFourSecondPassed()) {
             return 0;
         }
 
@@ -127,6 +129,16 @@ public class MinMax {
             return meilleurScore;
         }
     }
+
+    private static Instant timer;
+	public static void startTimer() {
+		timer = Instant.now();
+	}
+
+	public static boolean hasFourSecondPassed() {
+		return Duration.between(timer, Instant.now()).getSeconds() >= 4;
+    }
+    
 
     /**
      * Applique le mouvement d'un object move dans le board
