@@ -1,17 +1,21 @@
 package MinMax;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public class Move {
 
   MovePoint depart;
   MovePoint arrive;
+  int[][] boardupdated;
 
-  public Move(int xdepart, int ydepart, int xarrive, int yarrive) {
+  public Move(int xdepart, int ydepart, int xarrive, int yarrive, int[][] board) {
 
     this.depart = new MovePoint(xdepart, ydepart);
-
     this.arrive = new MovePoint(xarrive, yarrive);
+    boardupdated = copy(board);
+    applyMove(boardupdated, this);
+
   }
 
   public boolean estGagnant() {
@@ -21,6 +25,9 @@ public class Move {
     return false;
   }
 
+  public int[][] getBoard() {
+    return boardupdated;
+  }
   public Point getDepart() {
     return depart;
   }
@@ -56,6 +63,33 @@ public class Move {
   public String toCoordinate() {
     return "Depart  : [x=" + this.depart.x + ",y=" + this.depart.y + "]   Arrivé : [x=" + this.arrive.x + ",y="
         + this.arrive.y + "]";
+  }
+
+   /**
+     * Applique le mouvement d'un object move dans le board
+     * 
+     * @param board
+     * @param move
+     */
+    private void applyMove(int[][] board, Move move) {
+      int value = board[move.depart.x][move.depart.y];
+      board[move.arrive.x][move.arrive.y] = value;
+      board[move.depart.x][move.depart.y] = 0;
+  }
+
+  /**
+     * copy un board afin de ne pas garder la référence pour le modifier dans chaque
+     * move
+     * 
+     * @param src
+     * @return une copy du board
+     */
+    public static int[][] copy(int[][] src) {
+      int[][] dst = new int[src.length][];
+      for (int i = 0; i < src.length; i++) {
+          dst[i] = Arrays.copyOf(src[i], src[i].length);
+      }
+      return dst;
   }
 
 }

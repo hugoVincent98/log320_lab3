@@ -1,5 +1,6 @@
 package MinMax;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class GenerateurMove {
@@ -8,7 +9,9 @@ public abstract class GenerateurMove {
 
     int endRow;
     int endCol;
-
+    
+    protected LinkedList<Pion> listePionsRouge;
+    protected LinkedList<Pion> listePionsNoir;
     protected int nbPionRouge;
     protected int nbPionNoir;
 
@@ -20,6 +23,8 @@ public abstract class GenerateurMove {
     protected GenerateurMove(int[][] board) {
 
         this.board = board;
+        listePionsRouge = new LinkedList<>();
+        listePionsNoir = new LinkedList<>();
     }
 
     public abstract List<Move> obtenirListeMoves();
@@ -28,9 +33,11 @@ public abstract class GenerateurMove {
         return NOIR == couleur;
     }
 
+    
     public int getNbPionRouge() {
         return nbPionRouge;
     }
+
 
     public int getNbPionNoir() {
         return nbPionNoir;
@@ -50,5 +57,13 @@ public abstract class GenerateurMove {
     abstract boolean estDeplacableDroite(int xdepart, int ydepart);
 
     abstract boolean estDeplacableDevant(int xdepart, int ydepart);
+
+    public List<Pion> getListePionsRouge() {
+        return listePionsRouge;
+    }
+
+    public List<Pion> getListePionsNoir() {
+        return listePionsNoir;
+    }
 
 }

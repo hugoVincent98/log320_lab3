@@ -4,6 +4,7 @@ import java.util.List;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 public class MinMax {
     static final int MAX = 100000000;
@@ -47,21 +48,15 @@ public class MinMax {
         int meilleurScore = MIN;
         List<Move> myMoves = gen.obtenirListeMoves();
         Move meilleurMove = null;
-        int[][] nboard;
         for (Move m : myMoves) {
-            nboard = copy(this.board);
             // Pour chaque mouvements possibles, on va analyser son score
 
-            int score = getValueOfBoard(board, m, 0, gen.getNbPionNoir(), gen.getNbPionRouge());
+            int score = getValueOfBoard(m.getBoard(), m, 0);
             // effectue le mouvement
-            applyMove(nboard, m);
 
             System.out.println(" myMoves " + m.toCoordinate());
 
-            for (int d = 0; d < MAXDEPTH; d++) {
-
-            }
-            score = score + miniMax(nboard, 1, false, MIN, MAX);
+            score = score + miniMax(m.getBoard(), 1, false, MIN, MAX);
 
             // on prend toujours le meilleur score
             if (score > meilleurScore) {
@@ -88,16 +83,14 @@ public class MinMax {
             // pour récupérer la liste des moves possible sur ce dernier
             GenerateurMove tempGen = gen.newInstance(board);
             List<Move> myMoves = tempGen.obtenirListeMoves();
-            int[][] nboard;
             // pour chaque mouvements possible
             for (Move move : myMoves) {
-                nboard = copy(board);
-                int score = getValueOfBoard(board, move, depth, tempGen.getNbPionNoir(), tempGen.getNbPionRouge());
+
+                int score = getValueOfBoard(move.getBoard(), move, depth);
 
                 // on effectue le déplacement dans le board
-                applyMove(nboard, move);
 
-                score += miniMax(nboard, depth + 1, false, alpha, beta);
+                score += miniMax(move.getBoard(), depth + 1, false, alpha, beta);
 
                 // si ce mouvement a un meilleur score que le meilleur score actuelle
                 // on le garde en mémoire
@@ -114,14 +107,11 @@ public class MinMax {
             int meilleurScore = MAX;
             GenerateurMove tempCounterGen = counterGen.newInstance(board);
             List<Move> myMoves = tempCounterGen.obtenirListeMoves();
-            int[][] nboard;
 
             for (Move move : myMoves) {
-                nboard = copy(board);
                 int score = 0;
-                applyMove(nboard, move);
 
-                score += miniMax(nboard, depth + 1, true, alpha, beta);
+                score += miniMax(move.getBoard(), depth + 1, true, alpha, beta);
 
                 meilleurScore = Math.min(score, meilleurScore);
                 beta = Math.min(beta, score);
@@ -144,18 +134,6 @@ public class MinMax {
     }
 
     /**
-     * Applique le mouvement d'un object move dans le board
-     * 
-     * @param board
-     * @param move
-     */
-    private void applyMove(int[][] board, Move move) {
-        int value = board[move.depart.x][move.depart.y];
-        board[move.arrive.x][move.arrive.y] = value;
-        board[move.depart.x][move.depart.y] = 0;
-    }
-
-    /**
      * détermine dans un board qui a atteint la ligne d'arrivé
      * 
      * @param board
@@ -174,30 +152,14 @@ public class MinMax {
         return 0;
     }
 
-    /**
-     * copy un board afin de ne pas garder la référence pour le modifier dans chaque
-     * move
-     * 
-     * @param src
-     * @return une copy du board
-     */
-    public static int[][] copy(int[][] src) {
-        int[][] dst = new int[src.length][];
-        for (int i = 0; i < src.length; i++) {
-            dst[i] = Arrays.copyOf(src[i], src[i].length);
-        }
-        return dst;
-    }
-
     static final int ROUGE = 2;
     static final int NOIR = 4;
     static final int VALUE_DEFENCE = 50;
     static final int VALUE_ATTACK = 200;
     static final int VALUE_SIZE = 1000;
+    static final int VALUE_AUTOWIN = 1000000;
+    static final int VALUE_LOSE = -99999999;
     static final int VALUE_CASTLE = 100000;
-    static final int DANGER_3_LAST_COL = 100000;
-    static final int DANGER_NO_LAST_DEF = 100000;
-    static final int WIN_VALUE = 9999999;
 
     /**
      * regarde l'état du board et lui associe un score
@@ -205,79 +167,27 @@ public class MinMax {
      * @param board
      * @param mouvement
      * @param depth
-     * @param nbPionNoir
+     * @param list
      * @return le score associé au board évalué
      */
-    public int getValueOfBoard(int[][] board, Move mouvement, int depth, int nbPionNoir, int nbPionRouge) {
+    public int getValueOfBoard(int[][] board, Move mouvement, int depth) {
         int value = 0;
+        List<int[]> pionsrouge = new LinkedList<>();
+        List<int[]> pionsnoir = new LinkedList<>();
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == NOIR)
+                    pionsnoir.add((new int[] { i, j }));
+                if (board[i][j] == ROUGE)
+                    pionsrouge.add((new int[] { i, j }));
+            }
+        }
 
         // si notre AI joue les noirs
         if (toMax == NOIR) {
 
-            // score survie des pions noirs
-            value = value + (VALUE_SIZE * nbPionNoir);
-            value = value - (VALUE_SIZE * nbPionRouge);
-
-            // regarde si le pion noir tue un rouge
-            if (board[mouvement.arrive.x][mouvement.arrive.y] == ROUGE) {
-                value += VALUE_SIZE;
-                value += VALUE_ATTACK;
-                // regard backup gauche
-                if (mouvement.depart.x <= 6 && mouvement.depart.y <= 6
-                        && board[mouvement.depart.x + 1][mouvement.depart.y - 1] == NOIR) {
-                    value += VALUE_DEFENCE;
-                }
-
-                // regard backup droite
-                if (mouvement.depart.x >= 1 && mouvement.depart.y <= 6
-                        && board[mouvement.depart.x - 1][mouvement.depart.y - 1] == NOIR) {
-                    value += VALUE_DEFENCE;
-                }
-
-                value += 10;
-            }
-
-            // regard si move est suicide a gauche
-            if (mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1
-                    && board[mouvement.arrive.x + 1][mouvement.arrive.y - 1] == ROUGE) {
-                value -= 40;
-
-            }
-
-            // regard si move est suicide a droite
-            if (mouvement.arrive.x >= 1 && mouvement.arrive.y >= 1
-                    && board[mouvement.arrive.x - 1][mouvement.arrive.y - 1] == ROUGE) {
-                value -= 40;
-            }
-
-            // regard si il va avoir du backup apres son move a gauche
-
-            if (mouvement.depart.y != 7 && mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1
-                    && board[mouvement.arrive.x + 1][mouvement.arrive.y + 1] == NOIR) {
-                value += VALUE_DEFENCE;
-            }
-
-            // regard si il va avoirt du backup apres son move a droite
-
-            if (mouvement.depart.y != 7 && mouvement.arrive.x >= 1 && mouvement.arrive.y >= 1
-                    && board[mouvement.arrive.x - 1][mouvement.arrive.y + 1] == NOIR) {
-                value += VALUE_DEFENCE;
-            }
-            // danger value les rouges dans les 3 dernières col
-            if (depth == 0 && board[mouvement.arrive.x][mouvement.arrive.y] == ROUGE && mouvement.arrive.y > 4) {
-                value = value + DANGER_3_LAST_COL;
-
-            }
-
-            // si le pion est a 1 ou 2 moves de win
-            if ((depth == 0 || depth == 2 || depth == 4) && mouvement.arrive.y == 0) {
-
-                value += WIN_VALUE / (depth == 0 ? 1 : depth);
-                System.out.println("Pion au niv " + depth + " : " + mouvement.toCoordinate() + " value : " + value);
-
-            }
-
-            // stratégie du castle
+            // strategie du castle
             if (depth == 0 && turn < 7) {
 
                 // pion noir de B7 à C6
@@ -307,71 +217,30 @@ public class MinMax {
                 if (turn == 6 && mouvement.depart.equals(7, 6) && mouvement.arrive.equals(6, 5)) {
                     value += VALUE_CASTLE;
                 }
+            } else {
+                // strategie main
+
+                // analyzeNumbers
+                value += (pionsnoir.isEmpty() ? VALUE_LOSE : pionsnoir.size() * VALUE_SIZE);
+                value -= (pionsrouge.isEmpty() ? VALUE_LOSE : pionsrouge.size() * VALUE_SIZE);
+
+                // analyze potentiel de attack de chaque team
+                value += potentielAttackNoir(pionsnoir, board);
+                value -= potentielAttackRouge(pionsrouge, board);
+
+                // autowin conditions
+                int autoWin = autowinNoir(pionsnoir, pionsrouge);
+                int autoWinennemy = autowinRouge(pionsnoir, pionsrouge);
+                if (autoWin > autoWinennemy){
+                    value += autoWin;
+                }else if (autoWin < autoWinennemy){
+                    value -= autoWinennemy;
+                }
+                return value;
             }
         }
 
         if (toMax == ROUGE) {
-            // score survie des pions noirs
-            value = value + (VALUE_SIZE * nbPionRouge);
-            value = value - (VALUE_SIZE * nbPionNoir);
-
-            // regarde si le pion noir tue un rouge
-            if (board[mouvement.arrive.x][mouvement.arrive.y] == NOIR) {
-                value += VALUE_SIZE;
-                value += VALUE_ATTACK;
-                // regard backup gauche
-                if (mouvement.depart.x >= 1 && mouvement.depart.y <= 6
-                        && board[mouvement.depart.x - 1][mouvement.depart.y + 1] == ROUGE) {
-                    value += VALUE_DEFENCE;
-                }
-
-                // regard backup droite
-                if (mouvement.depart.x <= 6 && mouvement.depart.y <= 6
-                        && board[mouvement.depart.x + 1][mouvement.depart.y + 1] == ROUGE) {
-                    value += VALUE_DEFENCE;
-                }
-
-                value += 10;
-            }
-
-            // regard si move est suicide a gauche
-            if (mouvement.arrive.x <= 6 && mouvement.arrive.y <= 6
-                    && board[mouvement.arrive.x + 1][mouvement.arrive.y + 1] == NOIR) {
-                value -= 100;
-
-            }
-
-            // regard si move est suicide a droite
-            if (mouvement.arrive.x >= 1 && mouvement.arrive.y <= 6
-                    && board[mouvement.arrive.x - 1][mouvement.arrive.y + 1] == NOIR) {
-                value -= 100;
-            }
-
-            // regard si il va avoir du backup apres son move a droite
-
-            if (mouvement.depart.y != 0 && mouvement.arrive.x <= 6 && mouvement.arrive.y >= 1
-                    && board[mouvement.arrive.x + 1][mouvement.arrive.y - 1] == ROUGE) {
-                value += VALUE_DEFENCE;
-            }
-
-            // regard si il va avoir du backup apres son move a gauche
-            if (mouvement.depart.y != 0 && mouvement.arrive.x >= 1 && mouvement.arrive.y >= 1
-                    && board[mouvement.arrive.x - 1][mouvement.arrive.y - 1] == ROUGE) {
-                value += VALUE_DEFENCE;
-            }
-            // danger value les noirs dans les 3 dernières col
-            if (depth == 0 && board[mouvement.arrive.x][mouvement.arrive.y] == NOIR && mouvement.arrive.y < 2) {
-                value = value + DANGER_3_LAST_COL;
-
-            }
-
-            // si le pion est a 5 ou 6 moves de win
-            if ((depth == 0 || depth == 2 || depth == 4) && mouvement.arrive.y == 7) {
-
-                value += WIN_VALUE / (depth == 0 ? 1 : depth);
-                System.out.println("Pion au niv " + depth + " : " + mouvement.toCoordinate());
-
-            }
 
             // stratégie du castle
             if (depth == 0 && turn < 7) {
@@ -407,6 +276,256 @@ public class MinMax {
 
         }
         return value;
+    }
+
+    private int autowinRouge(List<int[]> pionsrouge, List<int[]> pionsnoir) {
+        boolean isInEnemySide;
+        boolean autoWinLeft = true;
+        boolean autoWinRight = true;
+        boolean isInFront;
+        boolean isInFront2;
+        int value = 0;
+        for (int[] pionrouge : pionsrouge) {
+            boolean cannotGoInFront = false;
+            int minPionValueLeft = pionrouge[0];
+            int minPionValueRight = 7 - pionrouge[0];
+            isInEnemySide = pionrouge[1] >= 4; // si coté noir
+            if (isInEnemySide) {
+                autoWinLeft = true;
+                autoWinRight = true;
+                for (int[] pionnoir : pionsnoir) {
+                    if (pionrouge[0] == pionnoir[0] && pionrouge[1] + 1 == pionnoir[1]) {// Check right in front
+                        cannotGoInFront = true;
+                    } else {
+                        isInFront = pionnoir[0] == pionrouge[0] && pionnoir[1] > pionrouge[1] + 1;
+                        // Check if there is an enemy pawn in front of the current pawn
+                        if (isInFront) {
+                            autoWinLeft = false;
+                            autoWinRight = false;
+                            break;
+                        } else if (Math.abs(pionnoir[0] - pionrouge[0]) == 1 && pionrouge[1] + 1 == pionnoir[1]) {
+                            // Check if our pawn is under-attack
+                            autoWinLeft = false;
+                            autoWinRight = false;
+                            break;
+                        } else if (Math.abs((pionnoir[0] - pionrouge[0])) == 1
+                                && (pionrouge[1] + (1 * 3)) == pionnoir[1]) { // Check if our pawn is
+                                                                               // under-controlled
+                            autoWinLeft = false;
+                            autoWinRight = false;
+                            break;
+                        } else if (pionnoir[0] < pionrouge[0]) {
+                            // Check left pawns for AutoWinRight
+                            isInFront2 = pionnoir[1] > pionrouge[1] + 1;
+                            if (isInFront2) {
+                                int pawnValueLeft = Math.abs(pionnoir[0] - pionrouge[0])
+                                        - Math.abs(pionnoir[1] - pionrouge[1]);
+                                if (pawnValueLeft < minPionValueLeft) {
+                                    minPionValueLeft = pawnValueLeft;
+                                }
+                            }
+                        } else if (pionnoir[0] > pionrouge[0]) {
+                            // Check right pawns for AutoWinRight
+                            isInFront2 = (pionnoir[1] > pionrouge[1] + 1);
+                            if (isInFront2) {
+                                int pawnValueRight = Math.abs(pionnoir[0] - pionrouge[0])
+                                        - Math.abs(pionnoir[1] - pionrouge[1]);
+                                if (pawnValueRight < minPionValueRight) {
+                                    minPionValueRight = pawnValueRight;
+
+                                }
+                            }
+                        }
+                    }
+                } // for
+
+                if ((minPionValueLeft + minPionValueRight) >= 0 && autoWinLeft && autoWinRight) {
+                    if ((minPionValueLeft + minPionValueRight) == 0 && cannotGoInFront) {
+                        // System.out.println("cannotGoInFront");
+                    } else {
+                        int offsetYtoWin = 4 - (7 - pionrouge[1]);
+                        if (VALUE_AUTOWIN * offsetYtoWin >= value) {
+                            value = VALUE_AUTOWIN * offsetYtoWin;
+                        }
+                    }
+                }
+            }
+        }
+        return value;
+    }
+
+    private int autowinNoir(List<int[]> pionsnoir, List<int[]> pionsrouge) {
+        boolean isInEnemySide;
+        boolean autoWinLeft = true;
+        boolean autoWinRight = true;
+        boolean isInFront;
+        boolean isInFront2;
+        int value = 0;
+        for (int[] pionnoir : pionsnoir) {
+            boolean cannotGoInFront = false;
+            int minPionValueLeft = pionnoir[0];
+            int minPionValueRight = 7 - pionnoir[0];
+            isInEnemySide = pionnoir[1] <= 3; // si coté rouge
+            if (isInEnemySide) {
+                autoWinLeft = true;
+                autoWinRight = true;
+                for (int[] pionrouge : pionsrouge) {
+                    if (pionnoir[0] == pionrouge[0] && pionnoir[1] - 1 == pionrouge[1]) {// Check right in front
+                        cannotGoInFront = true;
+                    } else {
+                        isInFront = pionrouge[0] == pionnoir[0] && pionrouge[1] < pionnoir[1] - 1;
+                        // Check if there is an enemy pawn in front of the current pawn
+                        if (isInFront) {
+                            autoWinLeft = false;
+                            autoWinRight = false;
+                            break;
+                        } else if (Math.abs(pionrouge[0] - pionnoir[0]) == 1 && pionnoir[1] - 1 == pionrouge[1]) {
+                            // Check if our pawn is under-attack
+                            autoWinLeft = false;
+                            autoWinRight = false;
+                            break;
+                        } else if (Math.abs((pionrouge[0] - pionnoir[0])) == 1
+                                && (pionnoir[1] + (-1 * 3)) == pionrouge[1]) { // Check if our pawn is
+                                                                               // under-controlled
+                            autoWinLeft = false;
+                            autoWinRight = false;
+                            break;
+                        } else if (pionrouge[0] < pionnoir[0]) {
+                            // Check left pawns for AutoWinRight
+                            isInFront2 = pionrouge[1] < pionnoir[1] + 1;
+                            if (isInFront2) {
+                                int pawnValueLeft = Math.abs(pionrouge[0] - pionnoir[0])
+                                        - Math.abs(pionrouge[1] - pionnoir[1]);
+                                if (pawnValueLeft < minPionValueLeft) {
+                                    minPionValueLeft = pawnValueLeft;
+                                }
+                            }
+                        } else if (pionrouge[0] > pionnoir[0]) {
+                            // Check right pawns for AutoWinRight
+                            isInFront2 = (pionrouge[1] < pionnoir[1] - 1);
+                            if (isInFront2) {
+                                int pawnValueRight = Math.abs(pionrouge[0] - pionnoir[0])
+                                        - Math.abs(pionrouge[1] - pionnoir[1]);
+                                if (pawnValueRight < minPionValueRight) {
+                                    minPionValueRight = pawnValueRight;
+
+                                }
+                            }
+                        }
+                    }
+                } // for
+
+                if ((minPionValueLeft + minPionValueRight) >= 0 && autoWinLeft && autoWinRight) {
+                    if ((minPionValueLeft + minPionValueRight) == 0 && cannotGoInFront) {
+                        // System.out.println("cannotGoInFront");
+                    } else {
+                        int offsetYtoWin = 4 - pionnoir[1];
+                        if (VALUE_AUTOWIN * offsetYtoWin >= value) {
+                            value = VALUE_AUTOWIN * offsetYtoWin;
+                        }
+                    }
+                }
+            }
+        }
+        return value;
+    }
+
+    private int potentielAttackRouge(List<int[]> pionsrouge, int[][] board) {
+        int value = 0;
+        for (int[] pionrouge : pionsrouge) {
+            // verifier attack vers lavant sa gauche
+            if (caseLegit(pionrouge[0] - 1, pionrouge[1] + 1)) {
+                if (caseEstRouge(board, pionrouge[0] - 1, pionrouge[1] + 1)) {
+                    value += VALUE_ATTACK;
+
+                    // verifier defense en arriere a gauche
+                    if (caseLegit(pionrouge[0] - 1, pionrouge[1] - 1)
+                            && caseEstNoir(board, pionrouge[0] - 1, pionrouge[1] - 1)) {
+                        value += VALUE_DEFENCE;
+                    }
+
+                    // verifier defense en arriere a droite
+                    if (caseLegit(pionrouge[0] + 1, pionrouge[1] - 1)
+                            && caseEstNoir(board, pionrouge[0] + 1, pionrouge[1] - 1)) {
+                        value += VALUE_DEFENCE;
+                    }
+                }
+            }
+            // verifier attack vers lavant sa droite
+            if (caseLegit(pionrouge[0] + 1, pionrouge[1] + 1)) {
+                if (caseEstRouge(board, pionrouge[0] + 1, pionrouge[1] + 1)) {
+                    value += VALUE_ATTACK;
+
+                    // verifier defense en arriere a gauche
+                    if (caseLegit(pionrouge[0] - 1, pionrouge[1] - 1)
+                            && caseEstNoir(board, pionrouge[0] - 1, pionrouge[1] - 1)) {
+                        value += VALUE_DEFENCE;
+                    }
+
+                    // verifier defense en arriere a droite
+                    if (caseLegit(pionrouge[0] + 1, pionrouge[1] - 1)
+                            && caseEstNoir(board, pionrouge[0] + 1, pionrouge[1] - 1)) {
+                        value += VALUE_DEFENCE;
+                    }
+                }
+            }
+        }
+        return value;
+    }
+
+    private int potentielAttackNoir(List<int[]> pionsnoir, int[][] board) {
+        int value = 0;
+        for (int[] pionnoir : pionsnoir) {
+            // verifier attack vers lavant sa gauche
+            if (caseLegit(pionnoir[0] + 1, pionnoir[1] - 1)) {
+                if (caseEstRouge(board, pionnoir[0] + 1, pionnoir[1] - 1)) {
+                    value += VALUE_ATTACK;
+
+                    // verifier defense en arriere a gauche
+                    if (caseLegit(pionnoir[0] + 1, pionnoir[1] + 1)
+                            && caseEstNoir(board, pionnoir[0] + 1, pionnoir[1] + 1)) {
+                        value += VALUE_DEFENCE;
+                    }
+
+                    // verifier defense en arriere a droite
+                    if (caseLegit(pionnoir[0] - 1, pionnoir[1] + 1)
+                            && caseEstNoir(board, pionnoir[0] - 1, pionnoir[1] + 1)) {
+                        value += VALUE_DEFENCE;
+                    }
+                }
+            }
+            // verifier attack vers lavant sa droite
+            if (caseLegit(pionnoir[0] - 1, pionnoir[1] - 1)) {
+                if (caseEstRouge(board, pionnoir[0] - 1, pionnoir[1] - 1)) {
+                    value += VALUE_ATTACK;
+
+                    // verifier defense en arriere a gauche
+                    if (caseLegit(pionnoir[0] + 1, pionnoir[1] + 1)
+                            && caseEstNoir(board, pionnoir[0] + 1, pionnoir[1] + 1)) {
+                        value += VALUE_DEFENCE;
+                    }
+
+                    // verifier defense en arriere a droite
+                    if (caseLegit(pionnoir[0] - 1, pionnoir[1] + 1)
+                            && caseEstNoir(board, pionnoir[0] - 1, pionnoir[1] + 1)) {
+                        value += VALUE_DEFENCE;
+                    }
+                }
+            }
+        }
+        return value;
+    }
+
+    private boolean caseLegit(int x, int y) {
+        return x >= 0 && x <= 7 && y >= 0 && y <= 7;
+    }
+
+    private boolean caseEstNoir(int[][] board, int x, int y) {
+        return board[x][y] == NOIR;
+    }
+
+    private boolean caseEstRouge(int[][] board, int x, int y) {
+        return board[x][y] == ROUGE;
     }
 
 }

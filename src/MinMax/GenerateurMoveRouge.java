@@ -25,26 +25,22 @@ public class GenerateurMoveRouge extends GenerateurMove {
       for (int j = 0; j < 8; j++) {
         // System.out.print(board[i][j]+" ");
 
-        if (estNoir(board[i][j])) {
-          nbPionRouge++;
-        }
         if (estRouge(board[i][j])) {
-          nbPionRouge++;
           // deplacement à gauche
 
           if (estDeplacableGauche(i, j)) {
 
-            Move enDroiteHaut = new Move(i, j, i - 1, j + 1);
+            Move enDroiteHaut = new Move(i, j, i - 1, j + 1, board);
             listeMoves.add(enDroiteHaut);
           }
           // deplacement au centre
           if (estDeplacableDevant(i, j)) {
-            Move enDroiteCentre = new Move(i, j, i, j + 1);
+            Move enDroiteCentre = new Move(i, j, i, j + 1,board);
             listeMoves.add(enDroiteCentre);
           }
 
           if (estDeplacableDroite(i, j)) {
-            Move enDroiteBas = new Move(i, j, i + 1, j + 1);
+            Move enDroiteBas = new Move(i, j, i + 1, j + 1,board);
             listeMoves.add(enDroiteBas);
           }
 
