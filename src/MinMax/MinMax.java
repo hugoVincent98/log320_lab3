@@ -58,6 +58,9 @@ public class MinMax {
 
             System.out.println(" myMoves " + m.toCoordinate());
 
+            for (int d = 0; d < MAXDEPTH; d++) {
+
+            }
             score = score + miniMax(nboard, 1, false, MIN, MAX);
 
             // on prend toujours le meilleur score
@@ -70,11 +73,11 @@ public class MinMax {
         return meilleurMove;
     }
 
-    static final int MAXDEPTH = 4;
+    static final int MAXDEPTH = 3;
 
     public int miniMax(int[][] board, int depth, boolean isMax, int alpha, int beta) {
-
-        if (depth > MAXDEPTH || hasFourSecondPassed()) {
+        // || hasFourSecondPassed()
+        if (depth > MAXDEPTH) {
             return 0;
         }
 
@@ -131,14 +134,14 @@ public class MinMax {
     }
 
     private static Instant timer;
-	public static void startTimer() {
-		timer = Instant.now();
-	}
 
-	public static boolean hasFourSecondPassed() {
-		return Duration.between(timer, Instant.now()).getSeconds() >= 4;
+    public static void startTimer() {
+        timer = Instant.now();
     }
-    
+
+    public static boolean hasFourSecondPassed() {
+        return Duration.between(timer, Instant.now()).getSeconds() >= 4;
+    }
 
     /**
      * Applique le mouvement d'un object move dans le board
