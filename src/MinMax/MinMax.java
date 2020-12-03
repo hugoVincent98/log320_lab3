@@ -1,10 +1,9 @@
 package MinMax;
 
 import java.util.List;
+
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 public class MinMax {
     static final int MAX = 100000000;
@@ -51,7 +50,7 @@ public class MinMax {
         for (Move m : myMoves) {
             // Pour chaque mouvements possibles, on va analyser son score
 
-            int score = getValueOfBoard(m.getBoard(), m, 0);
+            int score = getValueOfBoard(m.getBoard(), m, 0, toMax);
             // effectue le mouvement
 
             System.out.println(" myMoves " + m.toCoordinate());
@@ -86,7 +85,7 @@ public class MinMax {
             // pour chaque mouvements possible
             for (Move move : myMoves) {
 
-                int score = getValueOfBoard(move.getBoard(), move, depth);
+                int score = getValueOfBoard(move.getBoard(), move, depth, toMax);
 
                 // on effectue le déplacement dans le board
 
@@ -109,8 +108,8 @@ public class MinMax {
             List<Move> myMoves = tempCounterGen.obtenirListeMoves();
 
             for (Move move : myMoves) {
-                int score = 0;
 
+                int score = getValueOfBoard(move.getBoard(), move, depth, toMin);
                 score += miniMax(move.getBoard(), depth + 1, true, alpha, beta);
 
                 meilleurScore = Math.min(score, meilleurScore);
@@ -152,14 +151,21 @@ public class MinMax {
         return 0;
     }
 
+    static final int VIDE = 0;
     static final int ROUGE = 2;
     static final int NOIR = 4;
-    static final int VALUE_DEFENCE = 50;
-    static final int VALUE_ATTACK = 200;
-    static final int VALUE_SIZE = 1000;
-    static final int VALUE_AUTOWIN = 1000000;
-    static final int VALUE_LOSE = -99999999;
-    static final int VALUE_CASTLE = 100000;
+    static final int WINVALUE = 500000;
+    static final int PIECEALMOSTWINVALUE = 10000;
+    static final int PIECEVALUE = 1300;
+    static final int PIECEDANGERVALUE = 10;
+    static final int PIECEHIGHDANGERVALUE = 100;
+    static final int PIECEATTACKVALUE = 50;
+    static final int PIECEPROTECTIONVALUE = 65;
+    static final int PIECECONNECTIONHVALUE = 35;
+    static final int PIECECONNECTIONVVALUE = 15;
+    static final int PIECECOLUMNHOLEVALUE = 20;
+    static final int PIECEHOMEGROUNDVALUE = 10;
+    static final int VALUE_CASTLE = 1000;
 
     /**
      * regarde l'état du board et lui associe un score
@@ -167,27 +173,17 @@ public class MinMax {
      * @param board
      * @param mouvement
      * @param depth
+     * @param toMax2
      * @param list
      * @return le score associé au board évalué
      */
-    public int getValueOfBoard(int[][] board, Move mouvement, int depth) {
+    public int getValueOfBoard(int[][] board, Move mouvement, int depth, int couleur) {
         int value = 0;
-        List<int[]> pionsrouge = new LinkedList<>();
-        List<int[]> pionsnoir = new LinkedList<>();
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (board[i][j] == NOIR)
-                    pionsnoir.add((new int[] { i, j }));
-                if (board[i][j] == ROUGE)
-                    pionsrouge.add((new int[] { i, j }));
-            }
-        }
 
         // si notre AI joue les noirs
         if (toMax == NOIR) {
 
-            // strategie du castle
+            // stratégie du castle
             if (depth == 0 && turn < 7) {
 
                 // pion noir de B7 à C6
@@ -218,29 +214,12 @@ public class MinMax {
                     value += VALUE_CASTLE;
                 }
             } else {
-                // strategie main
-
-                // analyzeNumbers
-                value += (pionsnoir.isEmpty() ? VALUE_LOSE : pionsnoir.size() * VALUE_SIZE);
-                value -= (pionsrouge.isEmpty() ? VALUE_LOSE : pionsrouge.size() * VALUE_SIZE);
-
-                // analyze potentiel de attack de chaque team
-                value += potentielAttackNoir(pionsnoir, board);
-                value -= potentielAttackRouge(pionsrouge, board);
-
-                // autowin conditions
-                int autoWin = autowinNoir(pionsnoir, pionsrouge);
-                int autoWinennemy = autowinRouge(pionsnoir, pionsrouge);
-                if (autoWin > autoWinennemy){
-                    value += autoWin;
-                }else if (autoWin < autoWinennemy){
-                    value -= autoWinennemy;
-                }
-                return value;
+                // algo pour les noirs
             }
         }
 
         if (toMax == ROUGE) {
+            // score survie des pions noirs
 
             // stratégie du castle
             if (depth == 0 && turn < 7) {
@@ -275,244 +254,115 @@ public class MinMax {
             }
 
         }
+
         return value;
     }
 
-    private int autowinRouge(List<int[]> pionsrouge, List<int[]> pionsnoir) {
-        boolean isInEnemySide;
-        boolean autoWinLeft = true;
-        boolean autoWinRight = true;
-        boolean isInFront;
-        boolean isInFront2;
-        int value = 0;
-        for (int[] pionrouge : pionsrouge) {
-            boolean cannotGoInFront = false;
-            int minPionValueLeft = pionrouge[0];
-            int minPionValueRight = 7 - pionrouge[0];
-            isInEnemySide = pionrouge[1] >= 4; // si coté noir
-            if (isInEnemySide) {
-                autoWinLeft = true;
-                autoWinRight = true;
-                for (int[] pionnoir : pionsnoir) {
-                    if (pionrouge[0] == pionnoir[0] && pionrouge[1] + 1 == pionnoir[1]) {// Check right in front
-                        cannotGoInFront = true;
-                    } else {
-                        isInFront = pionnoir[0] == pionrouge[0] && pionnoir[1] > pionrouge[1] + 1;
-                        // Check if there is an enemy pawn in front of the current pawn
-                        if (isInFront) {
-                            autoWinLeft = false;
-                            autoWinRight = false;
-                            break;
-                        } else if (Math.abs(pionnoir[0] - pionrouge[0]) == 1 && pionrouge[1] + 1 == pionnoir[1]) {
-                            // Check if our pawn is under-attack
-                            autoWinLeft = false;
-                            autoWinRight = false;
-                            break;
-                        } else if (Math.abs((pionnoir[0] - pionrouge[0])) == 1
-                                && (pionrouge[1] + (1 * 3)) == pionnoir[1]) { // Check if our pawn is
-                                                                               // under-controlled
-                            autoWinLeft = false;
-                            autoWinRight = false;
-                            break;
-                        } else if (pionnoir[0] < pionrouge[0]) {
-                            // Check left pawns for AutoWinRight
-                            isInFront2 = pionnoir[1] > pionrouge[1] + 1;
-                            if (isInFront2) {
-                                int pawnValueLeft = Math.abs(pionnoir[0] - pionrouge[0])
-                                        - Math.abs(pionnoir[1] - pionrouge[1]);
-                                if (pawnValueLeft < minPionValueLeft) {
-                                    minPionValueLeft = pawnValueLeft;
-                                }
-                            }
-                        } else if (pionnoir[0] > pionrouge[0]) {
-                            // Check right pawns for AutoWinRight
-                            isInFront2 = (pionnoir[1] > pionrouge[1] + 1);
-                            if (isInFront2) {
-                                int pawnValueRight = Math.abs(pionnoir[0] - pionrouge[0])
-                                        - Math.abs(pionnoir[1] - pionrouge[1]);
-                                if (pawnValueRight < minPionValueRight) {
-                                    minPionValueRight = pawnValueRight;
-
-                                }
-                            }
-                        }
-                    }
-                } // for
-
-                if ((minPionValueLeft + minPionValueRight) >= 0 && autoWinLeft && autoWinRight) {
-                    if ((minPionValueLeft + minPionValueRight) == 0 && cannotGoInFront) {
-                        // System.out.println("cannotGoInFront");
-                    } else {
-                        int offsetYtoWin = 4 - (7 - pionrouge[1]);
-                        if (VALUE_AUTOWIN * offsetYtoWin >= value) {
-                            value = VALUE_AUTOWIN * offsetYtoWin;
-                        }
-                    }
-                }
-            }
-        }
-        return value;
+    private int getOppositeColor(int couleur) {
+        if (couleur == NOIR)
+            return ROUGE;
+        else
+            return NOIR;
     }
 
-    private int autowinNoir(List<int[]> pionsnoir, List<int[]> pionsrouge) {
-        boolean isInEnemySide;
-        boolean autoWinLeft = true;
-        boolean autoWinRight = true;
-        boolean isInFront;
-        boolean isInFront2;
-        int value = 0;
-        for (int[] pionnoir : pionsnoir) {
-            boolean cannotGoInFront = false;
-            int minPionValueLeft = pionnoir[0];
-            int minPionValueRight = 7 - pionnoir[0];
-            isInEnemySide = pionnoir[1] <= 3; // si coté rouge
-            if (isInEnemySide) {
-                autoWinLeft = true;
-                autoWinRight = true;
-                for (int[] pionrouge : pionsrouge) {
-                    if (pionnoir[0] == pionrouge[0] && pionnoir[1] - 1 == pionrouge[1]) {// Check right in front
-                        cannotGoInFront = true;
-                    } else {
-                        isInFront = pionrouge[0] == pionnoir[0] && pionrouge[1] < pionnoir[1] - 1;
-                        // Check if there is an enemy pawn in front of the current pawn
-                        if (isInFront) {
-                            autoWinLeft = false;
-                            autoWinRight = false;
-                            break;
-                        } else if (Math.abs(pionrouge[0] - pionnoir[0]) == 1 && pionnoir[1] - 1 == pionrouge[1]) {
-                            // Check if our pawn is under-attack
-                            autoWinLeft = false;
-                            autoWinRight = false;
-                            break;
-                        } else if (Math.abs((pionrouge[0] - pionnoir[0])) == 1
-                                && (pionnoir[1] + (-1 * 3)) == pionrouge[1]) { // Check if our pawn is
-                                                                               // under-controlled
-                            autoWinLeft = false;
-                            autoWinRight = false;
-                            break;
-                        } else if (pionrouge[0] < pionnoir[0]) {
-                            // Check left pawns for AutoWinRight
-                            isInFront2 = pionrouge[1] < pionnoir[1] + 1;
-                            if (isInFront2) {
-                                int pawnValueLeft = Math.abs(pionrouge[0] - pionnoir[0])
-                                        - Math.abs(pionrouge[1] - pionnoir[1]);
-                                if (pawnValueLeft < minPionValueLeft) {
-                                    minPionValueLeft = pawnValueLeft;
-                                }
-                            }
-                        } else if (pionrouge[0] > pionnoir[0]) {
-                            // Check right pawns for AutoWinRight
-                            isInFront2 = (pionrouge[1] < pionnoir[1] - 1);
-                            if (isInFront2) {
-                                int pawnValueRight = Math.abs(pionrouge[0] - pionnoir[0])
-                                        - Math.abs(pionrouge[1] - pionnoir[1]);
-                                if (pawnValueRight < minPionValueRight) {
-                                    minPionValueRight = pawnValueRight;
+    private int getPieceValue(int[][] board, int i, int j, int couleur) {
 
-                                }
-                            }
-                        }
-                    }
-                } // for
+        int value = PIECEVALUE;
 
-                if ((minPionValueLeft + minPionValueRight) >= 0 && autoWinLeft && autoWinRight) {
-                    if ((minPionValueLeft + minPionValueRight) == 0 && cannotGoInFront) {
-                        // System.out.println("cannotGoInFront");
-                    } else {
-                        int offsetYtoWin = 4 - pionnoir[1];
-                        if (VALUE_AUTOWIN * offsetYtoWin >= value) {
-                            value = VALUE_AUTOWIN * offsetYtoWin;
-                        }
-                    }
+        // valeur connexion horizontale
+        if ((j > 1 || j < 7) && ((caseLegit(i, j - 1) && couleur == board[i][j - 1])
+                || (caseLegit(i, j + 1) && couleur == board[i][j + 1]))) {
+            value += PIECECONNECTIONHVALUE;
+        }
+
+        // valeur connexion verticale
+        if ((caseLegit(i + 1, j) && board[i + 1][j] == couleur)
+                || (caseLegit(i - 1, j) && board[i - 1][j] == couleur)) {
+            value += PIECECONNECTIONVVALUE;
+        }
+        int validMoveCount = 0;
+        boolean estProtected = false;
+        int attackvaluescompteur = 0;
+        // valeur de attaque
+        if (couleur == NOIR) {
+            if (caseLegit(i - 1, j - 1)) {
+                if (caseEstRouge(board, i - 1, j - 1)) {
+                    value -= PIECEATTACKVALUE;
+                    attackvaluescompteur++;
+                } else if (caseEstNoir(board, i - 1, j)) {
+                    value += PIECEPROTECTIONVALUE;
+                    estProtected = true;
+                } else {
+                    validMoveCount++;
+                }
+            }
+            if (caseLegit(i + 1, j - 1)) {
+                if (caseEstRouge(board, i + 1, j - 1)) {
+                    value -= PIECEATTACKVALUE;
+                    attackvaluescompteur++;
+                } else if (caseEstNoir(board, i + 1, j - 1)) {
+                    value += PIECEPROTECTIONVALUE;
+                    estProtected = true;
+                } else {
+                    validMoveCount++;
+                }
+            }
+
+        } else {
+            if (caseLegit(i - 1, j + 1)) {
+                if (caseEstNoir(board, i - 1, j + 1)) {
+
+                    value -= PIECEATTACKVALUE;
+                    attackvaluescompteur++;
+                } else if (caseEstRouge(board, i - 1, j + 1)) {
+                    value += PIECEPROTECTIONVALUE;
+                    estProtected = true;
+                } else {
+                    validMoveCount++;
+                }
+            }
+            if (caseLegit(i + 1, j + 1)) {
+                if (caseEstNoir(board, i + 1, j + 1)) {
+                    value -= PIECEATTACKVALUE;
+                    attackvaluescompteur++;
+                } else if (caseEstRouge(board, i + 1, j + 1)) {
+                    value += PIECEPROTECTIONVALUE;
+                    estProtected = true;
+                } else {
+                    validMoveCount++;
                 }
             }
         }
-        return value;
-    }
 
-    private int potentielAttackRouge(List<int[]> pionsrouge, int[][] board) {
-        int value = 0;
-        for (int[] pionrouge : pionsrouge) {
-            // verifier attack vers lavant sa gauche
-            if (caseLegit(pionrouge[0] - 1, pionrouge[1] + 1)) {
-                if (caseEstRouge(board, pionrouge[0] - 1, pionrouge[1] + 1)) {
-                    value += VALUE_ATTACK;
-
-                    // verifier defense en arriere a gauche
-                    if (caseLegit(pionrouge[0] - 1, pionrouge[1] - 1)
-                            && caseEstNoir(board, pionrouge[0] - 1, pionrouge[1] - 1)) {
-                        value += VALUE_DEFENCE;
-                    }
-
-                    // verifier defense en arriere a droite
-                    if (caseLegit(pionrouge[0] + 1, pionrouge[1] - 1)
-                            && caseEstNoir(board, pionrouge[0] + 1, pionrouge[1] - 1)) {
-                        value += VALUE_DEFENCE;
-                    }
-                }
-            }
-            // verifier attack vers lavant sa droite
-            if (caseLegit(pionrouge[0] + 1, pionrouge[1] + 1)) {
-                if (caseEstRouge(board, pionrouge[0] + 1, pionrouge[1] + 1)) {
-                    value += VALUE_ATTACK;
-
-                    // verifier defense en arriere a gauche
-                    if (caseLegit(pionrouge[0] - 1, pionrouge[1] - 1)
-                            && caseEstNoir(board, pionrouge[0] - 1, pionrouge[1] - 1)) {
-                        value += VALUE_DEFENCE;
-                    }
-
-                    // verifier defense en arriere a droite
-                    if (caseLegit(pionrouge[0] + 1, pionrouge[1] - 1)
-                            && caseEstNoir(board, pionrouge[0] + 1, pionrouge[1] - 1)) {
-                        value += VALUE_DEFENCE;
-                    }
-                }
+        if (!estProtected) {
+            value -= (PIECEATTACKVALUE * attackvaluescompteur);
+        } else {
+            if (couleur == ROUGE) {
+                if (j == 5)
+                    value += PIECEDANGERVALUE;
+                else if (j == 6)
+                    value += PIECEHIGHDANGERVALUE;
+            } else {
+                if (j == 2)
+                    value += PIECEDANGERVALUE;
+                else if (j == 1)
+                    value += PIECEHIGHDANGERVALUE;
             }
         }
-        return value;
-    }
 
-    private int potentielAttackNoir(List<int[]> pionsnoir, int[][] board) {
-        int value = 0;
-        for (int[] pionnoir : pionsnoir) {
-            // verifier attack vers lavant sa gauche
-            if (caseLegit(pionnoir[0] + 1, pionnoir[1] - 1)) {
-                if (caseEstRouge(board, pionnoir[0] + 1, pionnoir[1] - 1)) {
-                    value += VALUE_ATTACK;
+        // danger value
+        if (couleur == ROUGE)
+            value += j * PIECEDANGERVALUE;
+        else
+            value += (8 - j) * PIECEDANGERVALUE;
 
-                    // verifier defense en arriere a gauche
-                    if (caseLegit(pionnoir[0] + 1, pionnoir[1] + 1)
-                            && caseEstNoir(board, pionnoir[0] + 1, pionnoir[1] + 1)) {
-                        value += VALUE_DEFENCE;
-                    }
-
-                    // verifier defense en arriere a droite
-                    if (caseLegit(pionnoir[0] - 1, pionnoir[1] + 1)
-                            && caseEstNoir(board, pionnoir[0] - 1, pionnoir[1] + 1)) {
-                        value += VALUE_DEFENCE;
-                    }
-                }
-            }
-            // verifier attack vers lavant sa droite
-            if (caseLegit(pionnoir[0] - 1, pionnoir[1] - 1)) {
-                if (caseEstRouge(board, pionnoir[0] - 1, pionnoir[1] - 1)) {
-                    value += VALUE_ATTACK;
-
-                    // verifier defense en arriere a gauche
-                    if (caseLegit(pionnoir[0] + 1, pionnoir[1] + 1)
-                            && caseEstNoir(board, pionnoir[0] + 1, pionnoir[1] + 1)) {
-                        value += VALUE_DEFENCE;
-                    }
-
-                    // verifier defense en arriere a droite
-                    if (caseLegit(pionnoir[0] - 1, pionnoir[1] + 1)
-                            && caseEstNoir(board, pionnoir[0] - 1, pionnoir[1] + 1)) {
-                        value += VALUE_DEFENCE;
-                    }
-                }
-            }
+        // mobility feature
+        if (couleur == ROUGE && caseLegit(i, j + 1) && board[i][j + 1] == VIDE) {
+            validMoveCount++;
+        } else if (couleur == NOIR && caseLegit(i, j - 1) && board[i][j - 1] == VIDE) {
+            validMoveCount++;
         }
+        value += Math.min(3, validMoveCount);
         return value;
     }
 

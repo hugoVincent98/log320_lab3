@@ -14,7 +14,7 @@ public class Move {
     this.depart = new MovePoint(xdepart, ydepart);
     this.arrive = new MovePoint(xarrive, yarrive);
     boardupdated = copy(board);
-    applyMove(boardupdated, this);
+     applyMove(boardupdated, this);
 
   }
 
@@ -28,6 +28,7 @@ public class Move {
   public int[][] getBoard() {
     return boardupdated;
   }
+
   public Point getDepart() {
     return depart;
   }
@@ -65,31 +66,35 @@ public class Move {
         + this.arrive.y + "]";
   }
 
-   /**
-     * Applique le mouvement d'un object move dans le board
-     * 
-     * @param board
-     * @param move
-     */
-    private void applyMove(int[][] board, Move move) {
-      int value = board[move.depart.x][move.depart.y];
-      board[move.arrive.x][move.arrive.y] = value;
-      board[move.depart.x][move.depart.y] = 0;
+  /**
+   * Applique le mouvement d'un object move dans le board
+   * 
+   * @param board
+   * @param move
+   */
+  private static void applyMove(int[][] board, Move move) {
+    int value = board[move.depart.x][move.depart.y];
+    board[move.arrive.x][move.arrive.y] = value;
+    board[move.depart.x][move.depart.y] = 0;
+  }
+
+  public void makeMove() {
+    applyMove(this.boardupdated, this);
   }
 
   /**
-     * copy un board afin de ne pas garder la référence pour le modifier dans chaque
-     * move
-     * 
-     * @param src
-     * @return une copy du board
-     */
-    public static int[][] copy(int[][] src) {
-      int[][] dst = new int[src.length][];
-      for (int i = 0; i < src.length; i++) {
-          dst[i] = Arrays.copyOf(src[i], src[i].length);
-      }
-      return dst;
+   * copy un board afin de ne pas garder la référence pour le modifier dans chaque
+   * move
+   * 
+   * @param src
+   * @return une copy du board
+   */
+  public static int[][] copy(int[][] src) {
+    int[][] dst = new int[src.length][];
+    for (int i = 0; i < src.length; i++) {
+      dst[i] = Arrays.copyOf(src[i], src[i].length);
+    }
+    return dst;
   }
 
 }
