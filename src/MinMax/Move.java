@@ -14,7 +14,7 @@ public class Move {
     this.depart = new MovePoint(xdepart, ydepart);
     this.arrive = new MovePoint(xarrive, yarrive);
     boardupdated = copy(board);
-     applyMove(boardupdated, this);
+    // applyMove(boardupdated, this);
 
   }
 
@@ -44,7 +44,7 @@ public class Move {
   public void setArrive(MovePoint arrive) {
     this.arrive = arrive;
   }
-
+  
   /**
    * Méthode qui retourne le mouvement en format demandé par le programme de jeu
    * 
